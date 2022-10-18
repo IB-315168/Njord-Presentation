@@ -35,7 +35,7 @@
 
         try
         {
-            User user = await userService.LoginAsync(new UserLoginDTO()
+            await userService.LoginAsync(new UserLoginDTO()
                 {
                     Email = email,
                     Password = password
@@ -43,7 +43,7 @@
 
             email = "";
             password = "";
-            resultMsg = $"Logged in succsessfully - hello, {user.FullName}!";
+            resultMsg = $"Logged in succsessfully - hello, {userService.User.FullName}!";
             color = "green";
         }
         catch (Exception e)

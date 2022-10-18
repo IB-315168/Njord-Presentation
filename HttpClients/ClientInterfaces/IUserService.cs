@@ -10,7 +10,9 @@ namespace HttpClients.ClientInterfaces
 {
     public interface IUserService
     {
+        User User { get; }
+        Task InitializeAsync();
         Task<User> CreateAsync(UserCreationDTO dto);
-        Task<User> LoginAsync(UserLoginDTO dto);
+        Task LoginAsync(UserLoginDTO dto);
     }
 }

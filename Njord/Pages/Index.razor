@@ -1,9 +1,27 @@
 ﻿@page "/"
+@using HttpClients.ClientInterfaces
+@inject IUserService userService
 
 <PageTitle>Index</PageTitle>
 
-<h1>Hello, world!</h1>
+@if (userService.User != null) {
+    fullName = userService.User.FullName;
+    <h1>Hello, @fullName!</h1>
+}
+else {
+    <h1>Hello, World!</h1>
+}
+
 
 Welcome to your new app.
 
 <SurveyPrompt Title="How is Blazor working for you?" />
+
+@code {
+    private string fullName = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        await userService.InitializeAsync();
+    }
+}
