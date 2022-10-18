@@ -22,8 +22,26 @@ namespace HttpClients.Implementations
 
         public async Task<User> CreateAsync(UserCreationDTO dto)
         {
-            HttpResponseMessage response = await client.PostAsJsonAsync("/users", dto);
+            HttpResponseMessage response = await client.PostAsJsonAsync("/api/users", dto);
             string result = await response.Content.ReadAsStringAsync();
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new Exception(result);
+            }
+
+            User user = JsonSerializer.Deserialize<User>(result, new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            })!;
+
+            return user;
+        }
+
+        public async Task<User> LoginAsync(UserLoginDTO dto)
+        {
+            HttpResponseMessage response = await client.PostAsJsonAsync("/api/users/authenticate", dto);
+            string result = await response.Content.ReadAsStringAsync();
+
             if (!response.IsSuccessStatusCode)
             {
                 throw new Exception(result);

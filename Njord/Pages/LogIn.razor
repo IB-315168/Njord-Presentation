@@ -1,51 +1,49 @@
-﻿@page "/signup"
+﻿@page "/login"
 @using Domain.DTOs
+@using Domain.Models
 @using HttpClients.ClientInterfaces
 @inject IUserService userService
 
 <div class="card">
-    <h3>Sign Up</h3>
+    <h3>Log in</h3>
     <div class="form-group field">
-        <label>Full name:</label>
-        <input type="text" @bind="fullName" @bind:event="oninput"/>
         <label>E-mail:</label>
-        <input type="email" @bind="email" @bind:event="oninput"/>
+        <input type="email" @bind="email" @bind:event="oninput" />
         <label>Password:</label>
-        <input type="password" @bind="password" @bind:event="oninput"/>
+        <input type="password" @bind="password" @bind:event="oninput" />
         @if (!string.IsNullOrEmpty(resultMsg))
         {
             <label style="color: @color">@resultMsg</label>
         }
     </div>
     <div class="button-row">
-        <button @onclick="Create" disabled="@(string.IsNullOrEmpty(fullName) || string.IsNullOrEmpty(email) || 
-string.IsNullOrEmpty(password))" class="acceptbtn">Create account</button>
+        <button @onclick="Login" disabled="@(string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))" class="acceptbtn">
+            Log in
+        </button>
     </div>
 </div>
 
 @code {
-    private string fullName = "";
     private string email = "";
     private string password = "";
     private string resultMsg = "";
     private string color = "";
 
-    private async Task Create()
+    private async Task Login()
     {
         resultMsg = "";
 
         try
         {
-            await userService.CreateAsync(new UserCreationDTO() {
-                FullName = fullName,
-                Email = email,
-                Password = password
-            });
+            User user = await userService.LoginAsync(new UserLoginDTO()
+                {
+                    Email = email,
+                    Password = password
+                });
 
-            fullName = "";
             email = "";
             password = "";
-            resultMsg = "Account successfully created";
+            resultMsg = $"Logged in succsessfully - hello, {user.FullName}!";
             color = "green";
         }
         catch (Exception e)
