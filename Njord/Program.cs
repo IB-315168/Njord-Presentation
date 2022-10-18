@@ -1,3 +1,5 @@
+using HttpClients.ClientInterfaces;
+using HttpClients.Implementations;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Njord;
@@ -7,5 +9,7 @@ builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https://localhost:7033") });
+
+builder.Services.AddScoped<IUserService, UserHttpClient>();
 
 await builder.Build().RunAsync();
