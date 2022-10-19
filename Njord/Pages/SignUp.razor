@@ -8,6 +8,8 @@
     <div class="form-group field">
         <label>Full name:</label>
         <input type="text" @bind="fullName" @bind:event="oninput"/>
+        <label>User name:</label>
+        <input type="text" @bind="userName" @bind:event="oninput"/>
         <label>E-mail:</label>
         <input type="email" @bind="email" @bind:event="oninput"/>
         <label>Password:</label>
@@ -18,13 +20,16 @@
         }
     </div>
     <div class="button-row">
-        <button @onclick="Create" disabled="@(string.IsNullOrEmpty(fullName) || string.IsNullOrEmpty(email) || 
+        <button @onclick="Create" disabled="@(string.IsNullOrEmpty(fullName) ||
+string.IsNullOrEmpty(userName) ||
+string.IsNullOrEmpty(email) || 
 string.IsNullOrEmpty(password))" class="acceptbtn">Create account</button>
     </div>
 </div>
 
 @code {
     private string fullName = "";
+    private string userName = "";
     private string email = "";
     private string password = "";
     private string resultMsg = "";
@@ -38,11 +43,13 @@ string.IsNullOrEmpty(password))" class="acceptbtn">Create account</button>
         {
             await userService.CreateAsync(new UserCreationDTO() {
                 FullName = fullName,
+                UserName = userName,
                 Email = email,
                 Password = password
             });
 
             fullName = "";
+            userName = "";
             email = "";
             password = "";
             resultMsg = "Account successfully created";
