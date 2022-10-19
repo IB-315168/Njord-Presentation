@@ -88,5 +88,18 @@ namespace HttpClients.Implementations
             User = null;
             await storageService.DeleteUser("logged");
         }
+
+        public async Task UpdateAsync(UserUpdateDTO dto)
+        {
+            string dtoAsJson = JsonSerializer.Serialize(dto);
+            StringContent body = new StringContent(dtoAsJson, Encoding.UTF8, "application/json");
+
+            HttpResponseMessage response = await client.PatchAsync("/api/users", body);
+            if (!response.IsSuccessStatusCode)
+            {
+                string content = await response.Content.ReadAsStringAsync();
+                throw new Exception(content);
+            }
+        }
     }
 }

@@ -1,0 +1,54 @@
+﻿@namespace UIComponents
+
+<h4>Availability</h4>
+    <div class="days">
+        @foreach(string s in availability.Keys) {
+            <label>@s</label>
+        }
+    </div>
+    <div class="hours">
+        @for(int i = 7; i < 24; i++) {
+            <label>@i:00</label>
+        }
+    </div>
+
+    <div class="container">
+    @foreach(string s in availability.Keys) {
+            int i = 0;
+            <div class="col">
+            @foreach (bool aval in availability[s])
+            {
+                <div class="row">
+                    <div id="check">
+                        <input type="checkbox" disabled=!@Editable id="@s,@i" checked=@availability[s][i] @onclick="Test" />
+                        <label class="test" for="@s,@i"></label>
+                    </div>
+                </div>
+                i++;
+            }
+            </div>
+    }
+    </div>
+
+@code {
+    [Parameter]
+    public bool Editable { get; set; }
+
+    private Dictionary<string, bool[]> availability;
+
+    protected override async Task OnInitializedAsync()
+    {
+        availability = new Dictionary<string, bool[]>();
+        availability.Add("Mon", new bool[64]);
+        availability.Add("Tue", new bool[64]);
+        availability.Add("Wed", new bool[64]);
+        availability.Add("Thu", new bool[64]);
+        availability.Add("Fri", new bool[64]);
+        availability.Add("Sat", new bool[64]);
+        availability.Add("Sun", new bool[64]);
+    }
+
+    private void Test(){
+        Console.WriteLine("Works");
+    }
+}

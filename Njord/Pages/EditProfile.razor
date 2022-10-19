@@ -1,0 +1,66 @@
+﻿@page "/EditProfile"
+@using Domain.DTOs
+@using Domain.Models
+@using HttpClients.ClientInterfaces
+@using Microsoft.AspNetCore.Components
+@inject IUserService userService
+@inject NavigationManager navMgr
+
+@if (userService.User == null)
+{
+    <label>You must be logged in to perform that action</label>
+}
+else {
+    <h3>Edit Profile - @userService.User.FullName</h3>
+    <div class="edit-view">
+        <div class="form-group field">
+            <label>Username:</label>
+            <input type="text" @bind="dto.UserName"/>
+        </div>
+        <div class="form-group field">
+            <label>Email:</label>
+            <input type="email" @bind="dto.Email"/>
+        </div>
+        <div class="form-group field">
+            <label>Password:</label>
+            <input type="password" @bind="dto.Password"/>
+        </div>
+        <button @onclick="UpdateAsync" class="acceptbtn">Save changes</button>
+    </div>
+}
+@if (!string.IsNullOrEmpty(msg))
+{
+    <label style="color: red">@msg</label>
+}
+
+@code {
+    private UserUpdateDTO dto = null!;
+    private string msg = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        msg = "";
+        dto = new UserUpdateDTO(userService.User.Id)
+            {
+                UserName = userService.User.UserName,
+                Email = userService.User.Email,
+                Password = "",
+                RecurAvailablity = userService.User.RecurAvailablity
+            };
+    }
+
+    private async Task UpdateAsync()
+    {
+        try
+        {
+            await userService.UpdateAsync(dto);
+            await userService.LogoutAsync();
+            navMgr.NavigateTo("/", forceLoad: true);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            msg = e.Message;
+        }
+    }
+}

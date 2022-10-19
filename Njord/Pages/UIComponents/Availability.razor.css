@@ -1,0 +1,58 @@
+﻿/* Add media for proper hours alignment*/
+
+.days {
+    display: flex;
+    margin-left: 5%;
+    width: 95%;
+    text-align: center;
+}
+
+    .days > label {
+        width: 14%;
+    }
+
+.hours {
+    width: 2%;
+    float: left;
+    height: 0.4vw;
+    margin-right: 1rem;
+}
+
+    .hours > label {
+        display: block;
+        margin-bottom: 1.13vw;
+    }
+
+
+
+
+@media screen and (min-width: 480px) {
+
+    .container {
+        display: inline-flex;
+    }
+
+    .test {
+        display: block;
+        background-color: white;
+        width: 20vh;
+        height: 0.6vw;
+        border-bottom: 0.5px dotted;
+    }
+
+    .row:nth-child(-2n+62) label  {
+        border-bottom: 0.5px solid;
+    }
+
+    .col:nth-child(-n+6) {
+        border-right: 0.5px solid;
+    }
+
+    #check input[type=checkbox] {
+        display: none;
+    }
+
+        #check input[type=checkbox]:checked + .test {
+            background-color: green;
+        }
+}

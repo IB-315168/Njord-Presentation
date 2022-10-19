@@ -36,6 +36,21 @@
     transition: 0.3s;
 }
 
+.deletebtn {
+    background-color: #194A7E;
+    transition: 0.3s;
+    color: white;
+    border-radius: 5px;
+    padding: 5px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.deletebtn:hover {
+    background-color: rgb(200, 0, 0);
+    transition: 0.3s;
+}
+
 .button-row {
     margin-top: 15px;
 }
@@ -54,6 +69,13 @@
             padding-left: 10px;
             padding-right: 10px;
         }
+
+.editProfile {
+    float: right;
+}
+
+.editProfile > button {
+}
 
 .availability {
     margin-top: 20px;

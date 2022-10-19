@@ -3,6 +3,7 @@
 @using Domain.Models
 @using HttpClients.ClientInterfaces
 @using Microsoft.AspNetCore.Components
+@using UIComponents
 @inject IUserService userService
 @inject NavigationManager navMgr
 
@@ -15,6 +16,12 @@ else if (userService.User == null) {
 }
 else {
     <h3>Profile - @user.UserName</h3>
+    @if(userService.User.Id == Id) {
+        <div class="editProfile">
+            <button class="acceptbtn" @onclick="@(() => navMgr.NavigateTo($"/EditProfile"))">Edit profile</button>
+            <button class="deletebtn">Delete profile</button>
+        </div>
+    }
     <div class="details">
         <table>
             <tr>
@@ -32,7 +39,7 @@ else {
         </table>
     </div>
     <div class="availability">
-        <h4>Availability:</h4>
+        <Availability Editable=false></Availability>
     </div>
 }
 
@@ -41,7 +48,8 @@ else {
     public int Id { get; set; }
     private string msg = "";
 
-    public UserBasicDTO user = null!;
+    private UserBasicDTO user = null!;
+
 
     protected override async Task OnInitializedAsync()
     {
@@ -49,21 +57,6 @@ else {
         try
         {
             user = await userService.GetByIdAsync(Id);
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-            msg = e.Message;
-        }
-    }
-
-    private async Task UpdateAsync()
-    {
-        try
-        {
-            //await userService.UpdateAsync(dto);
-            await userService.LogoutAsync();
-            navMgr.NavigateTo("/", forceLoad: true);
         }
         catch (Exception e)
         {
