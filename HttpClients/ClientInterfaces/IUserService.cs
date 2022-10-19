@@ -14,5 +14,6 @@ namespace HttpClients.ClientInterfaces
         Task InitializeAsync();
         Task<User> CreateAsync(UserCreationDTO dto);
         Task LoginAsync(UserLoginDTO dto);
+        Task LogoutAsync();
     }
 }

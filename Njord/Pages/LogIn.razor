@@ -3,6 +3,7 @@
 @using Domain.Models
 @using HttpClients.ClientInterfaces
 @inject IUserService userService
+@inject NavigationManager navMgr
 
 <div class="card">
     <h3>Log in</h3>
@@ -44,6 +45,7 @@
             email = "";
             password = "";
             resultMsg = $"Logged in succsessfully - hello, {userService.User.FullName}!";
+            navMgr.NavigateTo("/", forceLoad: true);
             color = "green";
         }
         catch (Exception e)

@@ -36,6 +36,21 @@ main {
         text-overflow: ellipsis;
     }
 
+    .top-row > button {
+        padding: 1rem;
+        background-color: whitesmoke;
+        overflow: hidden;
+        transition: 0.3s;
+        border: none;
+    }
+
+        .top-row > button:hover {
+            background-color: rgb(37, 150, 190);
+            color: white;
+            overflow: hidden;
+            transition: 0.3s;
+        }
+
 @media (max-width: 640.98px) {
     .top-row:not(.auth) {
         display: none;

@@ -16,7 +16,7 @@ namespace HttpClients.Implementations
         private readonly HttpClient client;
         private readonly IStorageService storageService;
         
-        public User User { get; private set; }
+        public User? User { get; private set; }
 
         public UserHttpClient(HttpClient client, IStorageService storageService)
         {
@@ -62,6 +62,12 @@ namespace HttpClients.Implementations
             })!;
 
             await storageService.SetUser("logged", User);
+        }
+
+        public async Task LogoutAsync()
+        {
+            User = null;
+            await storageService.DeleteUser("logged");
         }
     }
 }
