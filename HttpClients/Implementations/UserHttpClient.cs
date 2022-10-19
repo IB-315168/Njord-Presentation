@@ -46,6 +46,25 @@ namespace HttpClients.Implementations
             return user;
         }
 
+        public async Task<UserBasicDTO> GetByIdAsync(int id)
+        {
+
+            HttpResponseMessage response = await client.GetAsync($"/api/users/{id}");
+            string result = await response.Content.ReadAsStringAsync();
+
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new Exception(result);
+            }
+
+            UserBasicDTO profile = JsonSerializer.Deserialize<UserBasicDTO>(result, new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            })!;
+
+            return profile;
+        }
+
         public async Task LoginAsync(UserLoginDTO dto)
         {
             HttpResponseMessage response = await client.PostAsJsonAsync("/api/users/authenticate", dto);

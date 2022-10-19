@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.3.32922.545
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HttpClients", "HttpClients\HttpClients.csproj", "{2BBE6CE2-7073-473C-B6DB-D9426928B63E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HttpClients", "HttpClients\HttpClients.csproj", "{2BBE6CE2-7073-473C-B6DB-D9426928B63E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Domain", "Domain\Domain.csproj", "{CB58D108-9A70-48AB-9F5E-059A864F4A67}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Domain", "Domain\Domain.csproj", "{CB58D108-9A70-48AB-9F5E-059A864F4A67}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Njord", "Njord\Njord.csproj", "{37166CA8-3BFC-4BF4-AF41-79E31ADF6CAC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Njord", "Njord\Njord.csproj", "{37166CA8-3BFC-4BF4-AF41-79E31ADF6CAC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

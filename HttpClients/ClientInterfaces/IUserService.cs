@@ -13,6 +13,7 @@ namespace HttpClients.ClientInterfaces
         User User { get; }
         Task InitializeAsync();
         Task<User> CreateAsync(UserCreationDTO dto);
+        Task<UserBasicDTO> GetByIdAsync(int id);
         Task LoginAsync(UserLoginDTO dto);
         Task LogoutAsync();
     }

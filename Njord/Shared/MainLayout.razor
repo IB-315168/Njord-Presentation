@@ -12,7 +12,7 @@
         <div class="top-row px-4">
             @if (userService.User != null)
             {
-                <a href="#">@userService.User.UserName</a>
+                <a href="profile/@userService.User.Id">@userService.User.UserName</a>
                 <a href="#" @onclick="LogOut">Log out</a>
             }
             else {

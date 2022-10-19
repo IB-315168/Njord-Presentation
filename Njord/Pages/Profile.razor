@@ -1,0 +1,74 @@
+﻿@page "/profile/{id:int}"
+@using Domain.DTOs
+@using Domain.Models
+@using HttpClients.ClientInterfaces
+@using Microsoft.AspNetCore.Components
+@inject IUserService userService
+@inject NavigationManager navMgr
+
+@if (user == null)
+{
+    <label>Loading User profile..</label>
+}
+else if (userService.User == null) {
+    <label>You must be logged in to perform that action</label>
+}
+else {
+    <h3>Profile - @user.UserName</h3>
+    <div class="details">
+        <table>
+            <tr>
+                <td><b>Full name:</b></td>
+                <td>@user.FullName</td>
+            </tr>
+            <tr>
+                <td><b>User name:</b></td>
+                <td>@user.UserName</td>
+            </tr>
+            <tr>
+                <td><b>Email:</b></td>
+                <td><a href="mailto:@user.Email">@user.Email</a></td>
+            </tr>
+        </table>
+    </div>
+    <div class="availability">
+        <h4>Availability:</h4>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+    private string msg = "";
+
+    public UserBasicDTO user = null!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        msg = "";
+        try
+        {
+            user = await userService.GetByIdAsync(Id);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            msg = e.Message;
+        }
+    }
+
+    private async Task UpdateAsync()
+    {
+        try
+        {
+            //await userService.UpdateAsync(dto);
+            await userService.LogoutAsync();
+            navMgr.NavigateTo("/", forceLoad: true);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            msg = e.Message;
+        }
+    }
+}
