@@ -1,0 +1,18 @@
+﻿@namespace UIComponents
+
+<input type="checkbox" disabled="@Editable" id="@s,@i" checked="@Marked" @onchange="@((args) => OnChange.InvokeAsync((bool)args.Value!))" />
+<label class="test" for="@s,@i"></label>
+
+@code {
+    [Parameter] 
+    public string s { get; set; }
+    [Parameter]
+    public int i { get; set; }
+    [Parameter] 
+    public string Editable { get; set; }
+    [Parameter]
+    public bool Marked { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> OnChange { get; set; }
+}

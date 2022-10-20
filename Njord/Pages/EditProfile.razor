@@ -3,6 +3,7 @@
 @using Domain.Models
 @using HttpClients.ClientInterfaces
 @using Microsoft.AspNetCore.Components
+@using UIComponents
 @inject IUserService userService
 @inject NavigationManager navMgr
 
@@ -12,7 +13,7 @@
 }
 else {
     <h3>Edit Profile - @userService.User.FullName</h3>
-    <div class="edit-view">
+    <div class="form-group">
         <div class="form-group field">
             <label>Username:</label>
             <input type="text" @bind="dto.UserName"/>
@@ -27,6 +28,7 @@ else {
         </div>
         <button @onclick="UpdateAsync" class="acceptbtn">Save changes</button>
     </div>
+    <Availability RecurAval=@dto.RecurAvailablity OnChange="(aval) => SetAvailability(aval)"></Availability>
 }
 @if (!string.IsNullOrEmpty(msg))
 {
@@ -47,6 +49,12 @@ else {
                 Password = "",
                 RecurAvailablity = userService.User.RecurAvailablity
             };
+    }
+
+    private void SetAvailability(Dictionary<string, bool[]> availability) {
+        dto.RecurAvailablity = availability;
+        Console.WriteLine("test");
+        Console.WriteLine($"{dto.RecurAvailablity["Mon"][0]}, {availability["Mon"][0]}");
     }
 
     private async Task UpdateAsync()

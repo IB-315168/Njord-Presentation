@@ -2,7 +2,8 @@
 
 <h4>Availability</h4>
     <div class="days">
-        @foreach(string s in availability.Keys) {
+    @foreach (string s in RecurAval.Keys)
+    {
             <label>@s</label>
         }
     </div>
@@ -13,14 +14,14 @@
     </div>
 
     <div class="container">
-    @foreach(string s in availability.Keys) {
-            int i = 0;
-            <div class="col">
-            @foreach (bool aval in availability[s])
+    @foreach (string s in RecurAval.Keys){
+        int i = 0;
+        <div class="col">
+            @foreach(bool val in RecurAval[s])
             {
                 <div class="row">
                     <div id="check">
-                        <input type="checkbox" disabled=!@Editable id="@s,@i" checked=@availability[s][i] @onclick="Test" />
+                        <input type="checkbox" disabled="@Editable" id="@s,@i" checked="@val" @onchange="@((args) => {SetValue(s,i,(bool)args.Value!);})"/>
                         <label class="test" for="@s,@i"></label>
                     </div>
                 </div>
@@ -32,23 +33,36 @@
 
 @code {
     [Parameter]
-    public bool Editable { get; set; }
+    public string Editable { get; set; }
 
-    private Dictionary<string, bool[]> availability;
+    [Parameter]
+    public EventCallback<Dictionary<string, bool[]>> OnChange { get; set; }
+
+    [Parameter]
+    public Dictionary<string, bool[]> RecurAval { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        availability = new Dictionary<string, bool[]>();
-        availability.Add("Mon", new bool[64]);
-        availability.Add("Tue", new bool[64]);
-        availability.Add("Wed", new bool[64]);
-        availability.Add("Thu", new bool[64]);
-        availability.Add("Fri", new bool[64]);
-        availability.Add("Sat", new bool[64]);
-        availability.Add("Sun", new bool[64]);
+        if (RecurAval == null)
+        {
+            RecurAval = new Dictionary<string, bool[]>();
+            RecurAval.Add("Mon", new bool[64]);
+            RecurAval.Add("Tue", new bool[64]);
+            RecurAval.Add("Wed", new bool[64]);
+            RecurAval.Add("Thu", new bool[64]);
+            RecurAval.Add("Fri", new bool[64]);
+            RecurAval.Add("Sat", new bool[64]);
+            RecurAval.Add("Sun", new bool[64]);
+
+            RecurAval["Mon"][0] = true;
+        }
     }
 
-    private void Test(){
-        Console.WriteLine("Works");
+    private void SetValue(string s, int r, bool status) {
+        Console.WriteLine($"{s},{r},{status}");
+        RecurAval[s][r] = status;
+        Console.WriteLine(s + r + status);
+        OnChange.InvokeAsync(RecurAval);
     }
+
 }
