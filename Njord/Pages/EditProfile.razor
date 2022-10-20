@@ -28,7 +28,7 @@ else {
         </div>
         <button @onclick="UpdateAsync" class="acceptbtn">Save changes</button>
     </div>
-    <Availability RecurAval=@dto.RecurAvailablity OnChange="(aval) => SetAvailability(aval)"></Availability>
+    @*<Availability RecurAval=@dto.RecurAvailablity OnChange="(aval) => SetAvailability(aval)"></Availability>*@
 }
 @if (!string.IsNullOrEmpty(msg))
 {
@@ -51,11 +51,11 @@ else {
             };
     }
 
-    private void SetAvailability(Dictionary<string, bool[]> availability) {
-        dto.RecurAvailablity = availability;
-        Console.WriteLine("test");
-        Console.WriteLine($"{dto.RecurAvailablity["Mon"][0]}, {availability["Mon"][0]}");
-    }
+    //private void SetAvailability(Dictionary<string, bool[]> availability) {
+    //    dto.RecurAvailablity = availability;
+    //    Console.WriteLine("test");
+    //    Console.WriteLine($"{dto.RecurAvailablity["Mon"][0]}, {availability["Mon"][0]}");
+    //}
 
     private async Task UpdateAsync()
     {
