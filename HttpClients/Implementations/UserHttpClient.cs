@@ -33,6 +33,7 @@ namespace HttpClients.Implementations
         {
             HttpResponseMessage response = await client.PostAsJsonAsync("/api/users", dto);
             string result = await response.Content.ReadAsStringAsync();
+
             if (!response.IsSuccessStatusCode)
             {
                 throw new Exception(result);
@@ -63,6 +64,18 @@ namespace HttpClients.Implementations
             })!;
 
             return profile;
+        }
+
+        public async Task DeleteAsync(int id)
+        {
+            HttpResponseMessage response = await client.DeleteAsync($"/api/users/{id}");
+
+            if (!response.IsSuccessStatusCode)
+            {
+                string content = await response.Content.ReadAsStringAsync();
+                throw new Exception(content);
+            }
+
         }
 
         public async Task LoginAsync(UserLoginDTO dto)

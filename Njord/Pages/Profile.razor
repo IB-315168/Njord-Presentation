@@ -19,7 +19,7 @@ else {
     @if(userService.User.Id == Id) {
         <div class="editProfile">
             <button class="acceptbtn" @onclick="@(() => navMgr.NavigateTo($"/EditProfile"))">Edit profile</button>
-            <button class="deletebtn">Delete profile</button>
+            <button class="deletebtn" @onclick="DeleteProfile">Delete profile</button>
         </div>
     }
     <div class="details">
@@ -57,6 +57,19 @@ else {
         try
         {
             user = await userService.GetByIdAsync(Id);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            msg = e.Message;
+        }
+    }
+
+    private async Task DeleteProfile() {
+        msg = "";
+        try 
+        {
+            await userService.DeleteAsync(userService.User.Id);
         }
         catch (Exception e)
         {

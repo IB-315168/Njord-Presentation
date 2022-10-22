@@ -87,3 +87,21 @@
     border-radius: 5px;
     border-bottom: 20px;
 }
+
+.members {
+    margin-top: 20px;
+}
+
+    .members a {
+        text-decoration: none;
+        transition: 0.3s;
+    }
+
+        .members a:hover {
+            background-color: rgb(37, 150, 190);
+            color: white;
+            border-radius: 5px;
+            padding: 5px;
+            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+            transition: 0.3s;
+        }

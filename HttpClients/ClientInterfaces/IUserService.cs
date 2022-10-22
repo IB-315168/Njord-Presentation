@@ -15,6 +15,7 @@ namespace HttpClients.ClientInterfaces
         Task<User> CreateAsync(UserCreationDTO dto);
         Task<UserBasicDTO> GetByIdAsync(int id);
         Task UpdateAsync(UserUpdateDTO dto);
+        Task DeleteAsync(int id);
         Task LoginAsync(UserLoginDTO dto);
         Task LogoutAsync();
     }

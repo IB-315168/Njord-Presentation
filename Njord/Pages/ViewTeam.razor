@@ -1,0 +1,91 @@
+﻿@page "/team/{id:int}"
+@using Domain.DTOs
+@using Domain.Models
+@using HttpClients.ClientInterfaces
+@using Microsoft.AspNetCore.Components
+@using UIComponents
+@inject IUserService userService
+@inject ITeamService teamService
+@inject NavigationManager navMgr
+
+@if (teamSelected == null)
+{
+    <label>Loading Team profile..</label>
+}
+else if (userService.User == null)
+{
+    <label>You must be logged in to perform that action</label>
+}
+else
+{
+    <h3>Profile - @teamSelected.Name</h3>
+    @if (userService.User.Id == teamSelected.TeamLeaderId)
+    {
+        <div class="editProfile">
+            <button class="acceptbtn" @onclick="@(() => navMgr.NavigateTo($"/EditProfile"))">Edit team</button> @* Navigate to EditTeam*@
+            <button class="deletebtn">Delete team</button> @*@onclick="Delete Team"*@
+        </div>
+    }
+    <div class="details">
+        <table>
+            <tr>
+                <td><b>Team name:</b></td>
+                <td>@teamSelected.Name</td>
+            </tr>
+            <tr>
+                <td><b>Team leader:</b></td>
+                <td>@teamSelected.TeamLeaderId</td>
+            </tr>
+        </table>
+    </div>
+    @if(teamSelected.members.Count == 0) {
+        <label><br>This team does not have any members.</label>
+    }
+    else {
+        <div class="members">
+            <h4>Members: </h4>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>User name</th>
+                        <th>Full name</th>
+                        <th>E-mail</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (User member in teamSelected.members)
+                    {
+                        <tr>
+                            <td><a href="/profile/@member.Id">@member.UserName</a></td>
+                            <td>@member.FullName</td>
+                            <td>@member.Email</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+}
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+    private string msg = "";
+
+    private Team teamSelected = null!;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        msg = "";
+        try
+        {
+            teamSelected = await teamService.GetByIdAsync(Id);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            msg = e.Message;
+        }
+    }
+}

@@ -1,0 +1,53 @@
+﻿@page "/CreateTeam"
+@using Domain.DTOs
+@using HttpClients.ClientInterfaces
+@inject IUserService userService
+@inject ITeamService teamService
+
+@if(userService.User == null) {
+    <label>You must be logged in to perform that action.</label>
+}
+else {
+    <div class="card">
+        <h3>Create team</h3>
+        <div class="form-group field">
+            <label>Team name:</label>
+            <input type="text" @bind="teamName" @bind:event="oninput" />
+            @if (!string.IsNullOrEmpty(resultMsg))
+            {
+                <label style="color: @color">@resultMsg</label>
+            }
+        </div>
+        <div class="button-row">
+            <button @onclick="Create" disabled="@(string.IsNullOrEmpty(teamName))" class="acceptbtn">
+                Create team
+            </button>
+        </div>
+    </div>
+}
+
+@code {
+    private string teamName = "";
+
+    private string resultMsg = "";
+    private string color = "";
+
+    private async Task Create() {
+        resultMsg = "";
+
+        try 
+        {
+            await teamService.CreateAsync(new TeamCreateDTO(teamName, userService.User.Id));
+
+            teamName = "";
+            color = "green";
+            resultMsg = "Team successfully created";
+        } 
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            resultMsg = e.Message;
+            color = "red";
+        }
+    }
+}
