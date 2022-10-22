@@ -5,6 +5,7 @@
 @using Microsoft.AspNetCore.Components
 @using UIComponents
 @inject IUserService userService
+@inject ITeamService teamService
 @inject NavigationManager navMgr
 
 @if (user == null)
@@ -38,6 +39,20 @@ else {
             </tr>
         </table>
     </div>
+    <div class="user-teams">
+        <h3>Teams</h3>
+        @if(userTeams.Count() == 0) {
+            <label>This user does not belong to any teams.</label>
+        }
+        else {
+            @foreach(TeamBasicDTO team in userTeams) {
+                <div class="team-card" @onclick="@(() => navMgr.NavigateTo($"/team/{team.Id}"))">
+                    <div id="teamName">@team.Name</div>
+                    <label id="teamLeaderName">@team.TeamLeaderName</label>
+                </div>
+            }
+        }
+    </div>
     <div class="availability">
         @*<Availability RecurAval=@user.RecurAvailablity Editable="disabled"></Availability>*@
     </div>
@@ -49,6 +64,7 @@ else {
     private string msg = "";
 
     private UserBasicDTO user = null!;
+    private IEnumerable<TeamBasicDTO> userTeams = null!;
 
 
     protected override async Task OnInitializedAsync()
@@ -57,6 +73,7 @@ else {
         try
         {
             user = await userService.GetByIdAsync(Id);
+            userTeams = await teamService.GetByUserIdAsync(Id);
         }
         catch (Exception e)
         {

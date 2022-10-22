@@ -57,5 +57,23 @@ namespace HttpClients.Implementations
 
             return team;
         }
+
+        public async Task<IEnumerable<TeamBasicDTO>> GetByUserIdAsync(int id)
+        {
+            HttpResponseMessage response = await client.GetAsync($"/api/teams/?userId={id}");
+            string result = await response.Content.ReadAsStringAsync();
+
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new Exception(result);
+            }
+
+            IEnumerable<TeamBasicDTO> team = JsonSerializer.Deserialize<IEnumerable<TeamBasicDTO>>(result, new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            })!;
+
+            return team;
+        }
     }
 }

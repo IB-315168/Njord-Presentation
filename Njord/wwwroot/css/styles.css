@@ -103,5 +103,32 @@
             border-radius: 5px;
             padding: 5px;
             box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
-            transition: 0.3s;
         }
+
+.user-teams {
+    float: right;
+    width: 15%;
+    box-sizing: border-box;
+}
+
+    .user-teams .team-card {
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+        border-radius: 5px;
+        padding: 5px;
+        transition: 0.3s;
+    }
+
+        .user-teams .team-card:hover {
+            box-shadow: none;
+            background-color: rgb(37, 150, 190);
+            padding: 10px;
+            color: white;
+        }
+
+    .user-teams #teamName {
+        font-size: 1.2rem;
+    }
+
+    .user-teams #teamLeaderName {
+        font-size: 0.7rem;
+    }

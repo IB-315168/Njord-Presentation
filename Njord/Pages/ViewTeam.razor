@@ -18,8 +18,8 @@ else if (userService.User == null)
 }
 else
 {
-    <h3>Profile - @teamSelected.Name</h3>
-    @if (userService.User.Id == teamSelected.TeamLeaderId)
+    <h3>View team - @teamSelected.Name</h3>
+    @if (userService.User.Id == teamSelected.TeamLeader.Id)
     {
         <div class="editProfile">
             <button class="acceptbtn" @onclick="@(() => navMgr.NavigateTo($"/EditProfile"))">Edit team</button> @* Navigate to EditTeam*@
@@ -34,7 +34,7 @@ else
             </tr>
             <tr>
                 <td><b>Team leader:</b></td>
-                <td>@teamSelected.TeamLeaderId</td>
+                <td class="members"><a href="/profile/@teamSelected.TeamLeader.Id">@teamSelected.TeamLeader.FullName (@teamSelected.TeamLeader.UserName)</a></td>
             </tr>
         </table>
     </div>
