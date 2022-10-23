@@ -1,0 +1,105 @@
+﻿@namespace UIComponents
+@using Domain.DTOs
+@using Domain.Models
+@using System.Diagnostics.CodeAnalysis
+@using HttpClients.ClientInterfaces
+@inject IUserService userService
+
+<h3>Search Users</h3>
+<div class="form-group">
+    <div class="form-group field">
+        <label>Username:</label>
+        <input type="text" @bind="userName" />
+    </div>
+    <div class="form-group field">
+        <label>Email:</label>
+        <input type="email" @bind="email" />
+    </div>
+    <div class="form-group field">
+        <label>Full name:</label>
+        <input type="text" @bind="fullName" />
+    </div>
+    <button @onclick="Search" class="acceptbtn">Search</button>
+    <button @onclick="Clear" class="acceptbtn">Clear</button>
+</div>
+
+<div class="user-list">
+    @if (users == null) {
+        <label>Loading users...</label>
+    }
+    else if (users.Count == 0)
+    {
+        <label>No users found matching criteria.</label>
+    }
+    else {
+        <div class="members">
+            <h4>Users: </h4>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>User name</th>
+                        <th>Full name</th>
+                        <th>E-mail</th>
+                        @if (Edit)
+                        {
+                            <th>Team member?</th>
+                        }
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (User user in users)
+                    {
+                        <tr>
+                            <td><a href="/profile/@user.Id">@user.UserName</a></td>
+                            <td>@user.FullName</td>
+                            <td>@user.Email</td>
+                            @if (Edit)
+                            {
+                                <td><input type="checkbox" 
+                                    checked="@teamMembers.Contains(user)" 
+                                    @onchange="(arg) => OnChange.InvokeAsync(user)"/></td>
+                            }
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
+@if (!string.IsNullOrEmpty(errorMsg))
+{
+    <label style="color: red">@errorMsg</label>
+}
+
+@code {
+    [Parameter]
+    public bool Edit { get; set; }
+    [Parameter]
+    public ICollection<User> users { get; set; }
+    [Parameter, AllowNull]
+    public ICollection<User> teamMembers { get; set; }
+    [Parameter]
+    public EventCallback<User> OnChange { get; set; }
+
+    private string userName = "";
+    private string email = "";
+    private string fullName = "";
+    private string errorMsg = "";
+
+    private async void Search() {
+        try {
+            users = await userService.GetAsync(userName, email, fullName);
+        }
+        catch (Exception e) 
+        {
+            errorMsg = e.Message;
+        }
+    }
+
+    private void Clear() {
+        userName = "";
+        email = "";
+        fullName = "";
+        Search();
+    }
+}
