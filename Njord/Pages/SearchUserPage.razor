@@ -1,0 +1,15 @@
+﻿@page "/SearchUser"
+@using UIComponents
+@using HttpClients.ClientInterfaces
+@inject IUserService userService
+
+@if(userService.User == null) {
+    <label>You must be logged in to perform this action.</label>
+} else {
+    <h3>Search Users</h3>
+    <SearchUser Edit=false></SearchUser>
+}
+
+@code {
+
+}

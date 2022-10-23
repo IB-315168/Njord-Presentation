@@ -78,7 +78,7 @@ namespace HttpClients.Implementations
                 throw new Exception(content);
             }
 
-            ICollection<UserBasicDTO> users = JsonSerializer.Deserialize<ICollection<UserBasicDTO>>(content, new JsonSerializerOptions
+            ICollection<User> users = JsonSerializer.Deserialize<ICollection<User>>(content, new JsonSerializerOptions
             {
                 PropertyNameCaseInsensitive = true
             })!;
