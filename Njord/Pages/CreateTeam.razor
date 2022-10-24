@@ -37,6 +37,7 @@ else {
 
         try 
         {
+            await userService.InitializeAsync();
             await teamService.CreateAsync(new TeamCreateDTO(teamName, userService.User.Id));
 
             teamName = "";

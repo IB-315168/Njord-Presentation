@@ -7,5 +7,4 @@ public class Team
     public User TeamLeader { get; set; }
     public ICollection<User> members { get; set; }
 
-
 }

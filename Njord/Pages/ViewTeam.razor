@@ -22,7 +22,7 @@ else
     @if (userService.User.Id == teamSelected.TeamLeader.Id)
     {
         <div class="editProfile">
-            <button class="acceptbtn" @onclick="@(() => navMgr.NavigateTo($"/"))">Edit team</button> @* Navigate to EditTeam*@
+            <button class="acceptbtn" @onclick="@(() => navMgr.NavigateTo($"/editTeam/{teamSelected.Id}"))">Edit team</button> @* Navigate to EditTeam*@
             <button class="deletebtn">Delete team</button> @*@onclick="Delete Team"*@
         </div>
     }
@@ -80,6 +80,7 @@ else
         msg = "";
         try
         {
+            await userService.InitializeAsync();
             teamSelected = await teamService.GetByIdAsync(Id);
         }
         catch (Exception e)

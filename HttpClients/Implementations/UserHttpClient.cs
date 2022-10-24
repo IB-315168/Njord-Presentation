@@ -97,13 +97,13 @@ namespace HttpClients.Implementations
             if (!string.IsNullOrEmpty(email))
             {
                 query += string.IsNullOrEmpty(query) ? "?" : "&";
-                query += $"?email={email}";
+                query += $"email={email}";
             }
 
             if (!string.IsNullOrEmpty(fullName))
             {
                 query += string.IsNullOrEmpty(query) ? "?" : "&";
-                query += $"?fullname={fullName}";
+                query += $"fullname={fullName}";
             }
 
             return query; 

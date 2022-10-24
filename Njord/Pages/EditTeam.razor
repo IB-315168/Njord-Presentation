@@ -1,0 +1,77 @@
+﻿@page "/editTeam/{id:int}"
+@using Domain.DTOs
+@using Domain.Models
+@using HttpClients.ClientInterfaces
+@using Microsoft.AspNetCore.Components
+@using UIComponents
+@inject IUserService userService
+@inject ITeamService teamService
+@inject NavigationManager navMgr
+
+@if(teamEdited == null) {
+    <label>Loading team...</label>
+}
+else if (userService.User == null) {
+    <label>You must be logged in to perform this action.</label>
+}
+else if (teamEdited.TeamLeader.Id != userService.User.Id) {
+    <label>You are not authorized to perform this action.</label>
+}
+else {
+    <h3>EditTeam - @teamEdited.Name</h3>
+
+    <div class="form-group">
+        <div class="form-group field">
+            <label>Team name:</label>
+            <input type="text" @bind="teamName"/>
+        </div>
+        <button class="acceptbtn" @onclick="SaveChanges">Save changes</button>
+    </div>
+    <h4>Manage team members</h4>
+    <SearchUser Edit=true teamMembers="teamEdited.members" OnChange="@((user) => ChangeToTeam(user))"></SearchUser>
+}
+
+@if (!string.IsNullOrEmpty(msg))
+{
+    <label style="color: red">@msg</label>
+}
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private Team teamEdited = null!;
+    private string msg = "";
+
+    private ICollection<User> spoofList;
+    private string teamName = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        try {
+            teamEdited = await teamService.GetByIdAsync(Id);
+            teamName = teamEdited.Name;
+            spoofList = new List<User>();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            msg = e.Message;
+
+        }
+    }
+
+    private async Task ChangeToTeam(User user) {
+        if(spoofList.Contains(user)) {
+            spoofList.Remove(user);
+            Console.WriteLine($"Removed - {user.FullName} - {spoofList.Count()}");
+        } else {
+            spoofList.Add(user);
+            Console.WriteLine($"Added - {user.FullName} - {spoofList.Count()}");
+        }
+    }
+
+    private async Task SaveChanges() {
+        navMgr.NavigateTo($"/team/{teamEdited.Id}");
+    }
+}

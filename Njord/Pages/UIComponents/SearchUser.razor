@@ -4,6 +4,7 @@
 @using System.Diagnostics.CodeAnalysis
 @using HttpClients.ClientInterfaces
 @inject IUserService userService
+@inject NavigationManager navMgr
 
 <div class="form-group">
     <div class="form-group field">
@@ -11,28 +12,27 @@
         <input type="text" @bind="userName" />
     </div>
     <div class="form-group field">
+        <label>Full name:</label>
+        <input type="text" @bind="fullName" />
+    </div>    
+    <div class="form-group field">
         <label>Email:</label>
         <input type="email" @bind="email" />
     </div>
-    <div class="form-group field">
-        <label>Full name:</label>
-        <input type="text" @bind="fullName" />
-    </div>
-    <button @onclick="Search" class="acceptbtn">Search</button>
-    <button @onclick="Clear" class="acceptbtn">Clear</button>
+    <button @onclick="@Search" class="acceptbtn">Search</button>
+    <button @onclick="@Clear" class="acceptbtn">Clear</button>
 </div>
 
 <div class="user-list">
     @if (users == null) {
         <label>Loading users...</label>
     }
-    else if (users.Count == 0)
+    else if (!users.Any())
     {
         <label>No users found matching criteria.</label>
     }
     else {
         <div class="members">
-            <h4>Users: </h4>
             <table class="table">
                 <thead>
                     <tr>
@@ -75,7 +75,7 @@
     public bool Edit { get; set; }
     [Parameter]
     public ICollection<User> users { get; set; }
-    [Parameter, AllowNull]
+    [Parameter]
     public ICollection<User> teamMembers { get; set; }
     [Parameter]
     public EventCallback<User> OnChange { get; set; }
@@ -85,7 +85,15 @@
     private string fullName = "";
     private string errorMsg = "";
 
-    private async void Search() {
+    protected override async Task OnInitializedAsync()
+    {
+        if(teamMembers == null) {
+            teamMembers = new List<User>();
+        }
+        users = await userService.GetAsync(userName, email, fullName);
+    }
+
+    private async Task Search() {
         try {
             users = await userService.GetAsync(userName, email, fullName);
         }
@@ -95,10 +103,10 @@
         }
     }
 
-    private void Clear() {
+    private async Task Clear() {
         userName = "";
         email = "";
         fullName = "";
-        Search();
+        await Search();
     }
 }

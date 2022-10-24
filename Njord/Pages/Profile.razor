@@ -72,6 +72,7 @@ else {
         msg = "";
         try
         {
+            await userService.InitializeAsync();
             user = await userService.GetByIdAsync(Id);
             userTeams = await teamService.GetByUserIdAsync(Id);
         }

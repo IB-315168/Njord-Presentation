@@ -11,6 +11,9 @@
 {
     <label>You must be logged in to perform that action</label>
 }
+else if (dto == null) {
+    <label>Loading edit profile...</label>
+}
 else {
     <h3>Edit Profile - @userService.User.FullName</h3>
     <div class="form-group">
@@ -42,6 +45,7 @@ else {
     protected override async Task OnInitializedAsync()
     {
         msg = "";
+        await userService.InitializeAsync();
         dto = new UserUpdateDTO(userService.User.Id)
             {
                 UserName = userService.User.UserName,
@@ -49,7 +53,7 @@ else {
                 Password = "",
                 RecurAvailablity = new Dictionary<string, bool[]>()
             };
-    }
+    }   
 
     //private void SetAvailability(Dictionary<string, bool[]> availability) {
     //    dto.RecurAvailablity = availability;
