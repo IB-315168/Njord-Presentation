@@ -1,0 +1,27 @@
+﻿@namespace UIComponents
+
+@if (ShowPopup)
+{
+    <div class="popup-background" style="display:block; height: 100%">
+        <div class="popup-box">
+
+            <label id="closePopup" @onclick="ClosePopup">X</label>
+
+            @ChildContent
+
+        </div>
+    </div>
+}
+
+@code {
+
+    [Parameter]
+    public RenderFragment ChildContent { get; set; } = null!;
+
+    [Parameter]
+    public bool ShowPopup { get; set; }
+
+    private void ClosePopup() {
+        ShowPopup = false;
+    }
+}
