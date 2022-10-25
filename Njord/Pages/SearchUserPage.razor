@@ -3,16 +3,13 @@
 @using HttpClients.ClientInterfaces
 @inject IUserService userService
 
-@if(userService.User == null) {
-    <label>You must be logged in to perform this action.</label>
-} else {
-    <h3>Search Users</h3>
-    <SearchUser Edit=false></SearchUser>
-}
+<AuthorizeView>
+    <NotAuthorized><label>You must be logged in to perform this action.</label></NotAuthorized>
+    <Authorized>
+        <h3>Search Users</h3>
+        <SearchUser Edit=false></SearchUser>
+    </Authorized>
+</AuthorizeView>
 
 @code {
-    protected override async Task OnInitializedAsync()
-    {
-        await userService.InitializeAsync();
-    }
 }

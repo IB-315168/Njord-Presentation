@@ -6,63 +6,70 @@
 @using UIComponents
 @inject IUserService userService
 @inject ITeamService teamService
+@inject IAuthService authService
 @inject NavigationManager navMgr
 
 @if (user == null)
 {
     <label>Loading User profile..</label>
 }
-else if (userService.User == null) {
-    <label>You must be logged in to perform that action</label>
-}
-else {
-    <h3>Profile - @user.UserName</h3>
-    @if(userService.User.Id == Id) {
-        <div class="editProfile">
-            <button class="acceptbtn" @onclick="@(() => navMgr.NavigateTo($"/EditProfile"))">Edit profile</button>
-            <button class="deletebtn" @onclick="DeleteProfile">Delete profile</button>
-        </div>
-    }
-    <div class="details">
-        <table>
-            <tr>
-                <td><b>Full name:</b></td>
-                <td>@user.FullName</td>
-            </tr>
-            <tr>
-                <td><b>User name:</b></td>
-                <td>@user.UserName</td>
-            </tr>
-            <tr>
-                <td><b>Email:</b></td>
-                <td><a href="mailto:@user.Email">@user.Email</a></td>
-            </tr>
-        </table>
-    </div>
-    <div class="user-teams">
-        <h3>Teams</h3>
-        @if(userTeams.Count() == 0) {
-            <label>This user does not belong to any teams.</label>
-        }
-        else {
-            @foreach(TeamBasicDTO team in userTeams) {
-                <div class="team-card" @onclick="@(() => navMgr.NavigateTo($"/team/{team.Id}"))">
-                    <div id="teamName">@team.Name</div>
-                    <label id="teamLeaderName">@team.TeamLeaderName</label>
+else  {
+    <AuthorizeView>
+        <NotAuthorized><label>You must be logged in to perform that action</label></NotAuthorized>
+        <Authorized>
+            <h3>Profile - @user.FullName</h3>
+            @if (@context.User.Claims.First(c => c.Type.Equals("Id")).Value.Equals(user.Id.ToString()))
+            {
+                <div class="editProfile">
+                    <button class="acceptbtn" @onclick="@(() => navMgr.NavigateTo($"/EditProfile/{@context.User.Claims.First(c => c.Type.Equals("Id")).Value}"))">Edit profile</button>
+                    <button class="deletebtn" @onclick="DeleteProfile">Delete profile</button>
                 </div>
             }
-        }
-    </div>
-    <div class="availability">
-        @*<Availability RecurAval=@user.RecurAvailablity Editable="disabled"></Availability>*@
-    </div>
+            <div class="details">
+                <table>
+                    <tr>
+                        <td><b>Full name:</b></td>
+                        <td>@user.FullName</td>
+                    </tr>
+                    <tr>
+                        <td><b>User name:</b></td>
+                        <td>@user.UserName</td>
+                    </tr>
+                    <tr>
+                        <td><b>Email:</b></td>
+                        <td><a href="mailto:@user.Email">@user.Email</a></td>
+                    </tr>
+                </table>
+            </div>
+            <div class="user-teams">
+                <h3>Teams</h3>
+                @if (userTeams.Count() == 0)
+                {
+                    <label>This user does not belong to any teams.</label>
+                }
+                else
+                {
+                    @foreach (TeamBasicDTO team in userTeams)
+                    {
+                        <div class="team-card" @onclick="@(() => navMgr.NavigateTo($"/team/{team.Id}"))">
+                            <div id="teamName">@team.Name</div>
+                            <label id="teamLeaderName">@team.TeamLeaderName</label>
+                        </div>
+                    }
+                }
+            </div>
+            <div class="availability">
+                @*<Availability RecurAval=@user.RecurAvailablity Editable="disabled"></Availability>*@
+            </div>
 
-    <Popup ShowPopup="showPopup">
-        <h3>Warning</h3>
-        <label>You are about to delete your profile. Confirm that action by typing your password in field below.</label>
-        <input type="text" @bind="removeConfirmation" />
-        <button disabled="@(string.IsNullOrEmpty(removeConfirmation) || !userService.User.Password.Equals(removeConfirmation))" @onclick="Proceed">Confirm</button>
-    </Popup>
+            <Popup ShowPopup="showPopup">
+                <h3>Warning</h3>
+                <label>You are about to delete your profile. Confirm that action by typing <b>@context.User.Identity.Name</b> in field below.</label>
+                <input type="text" @bind="removeConfirmation" @bind:event="oninput"/>
+                <button disabled="@(string.IsNullOrEmpty(removeConfirmation) || !removeConfirmation.Equals(context.User.Identity.Name))" @onclick="Proceed">Confirm</button>
+            </Popup>
+        </Authorized>
+    </AuthorizeView>   
 }
 
 @code {
@@ -82,7 +89,6 @@ else {
         msg = "";
         try
         {
-            await userService.InitializeAsync();
             user = await userService.GetByIdAsync(Id);
             userTeams = await teamService.GetByUserIdAsync(Id);
         }
@@ -102,9 +108,9 @@ else {
         msg = "";
         try
         {
-            await userService.DeleteAsync(userService.User.Id);
-            await userService.LogoutAsync();
-            navMgr.NavigateTo("/", forceLoad: true);
+            await userService.DeleteAsync(user.Id);
+            await authService.LogoutAsync();
+            navMgr.NavigateTo("/");
         }
         catch (Exception e)
         {

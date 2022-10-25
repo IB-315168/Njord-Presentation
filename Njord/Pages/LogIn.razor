@@ -2,29 +2,37 @@
 @using Domain.DTOs
 @using Domain.Models
 @using HttpClients.ClientInterfaces
-@inject IUserService userService
+@inject IAuthService authService
 @inject NavigationManager navMgr
 
-<div class="card">
-    <h3>Log in</h3>
-    <div class="form-group field">
-        <label>E-mail:</label>
-        <input type="email" @bind="email" @bind:event="oninput" />
-        <label>Password:</label>
-        <input type="password" @bind="password" @bind:event="oninput" />
-        @if (!string.IsNullOrEmpty(resultMsg))
-        {
-            <label style="color: @color">@resultMsg</label>
-        }
-    </div>
-    <div class="button-row">
-        <button @onclick="Login" disabled="@(string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))" class="acceptbtn">
-            Log in
-        </button>
-    </div>
-</div>
+<AuthorizeView>
+    <NotAuthorized>
+        <div class="card">
+            <h3>Log in</h3>
+            <div class="form-group field">
+                <label>E-mail:</label>
+                <input type="email" @bind="email" @bind:event="oninput" />
+                <label>Password:</label>
+                <input type="password" @bind="password" @bind:event="oninput" />
+                @if (!string.IsNullOrEmpty(resultMsg))
+                {
+                    <label style="color: @color">@resultMsg</label>
+                }
+            </div>
+            <div class="button-row">
+                <button @onclick="Login" disabled="@(string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))" class="acceptbtn">
+                    Log in
+                </button>
+            </div>
+        </div>
+    </NotAuthorized>
+    <Authorized>
+        <label>Hello, @context.User.Identity.Name</label>
+    </Authorized>
+</AuthorizeView>
 
 @code {
+    private string userName = "";
     private string email = "";
     private string password = "";
     private string resultMsg = "";
@@ -36,7 +44,7 @@
 
         try
         {
-            await userService.LoginAsync(new UserLoginDTO()
+            await authService.LoginAsync(new UserLoginDTO()
                 {
                     Email = email,
                     Password = password
@@ -44,8 +52,8 @@
 
             email = "";
             password = "";
-            resultMsg = $"Logged in succsessfully - hello, {userService.User.FullName}!";
-            navMgr.NavigateTo("/", forceLoad: true);
+            resultMsg = $"Logged in succsessfully";
+            navMgr.NavigateTo("/");
             color = "green";
         }
         catch (Exception e)

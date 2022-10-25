@@ -3,31 +3,35 @@
 @using HttpClients.ClientInterfaces
 @inject IUserService userService
 @inject ITeamService teamService
+@inject AuthenticationStateProvider asp
 
-@if(userService.User == null) {
-    <label>You must be logged in to perform that action.</label>
-}
-else {
-    <div class="card">
-        <h3>Create team</h3>
-        <div class="form-group field">
-            <label>Team name:</label>
-            <input type="text" @bind="teamName" @bind:event="oninput" />
-            @if (!string.IsNullOrEmpty(resultMsg))
-            {
-                <label style="color: @color">@resultMsg</label>
-            }
+<AuthorizeView>
+    <NotAuthorized>
+        <label>You must be logged in to perform that action.</label>
+    </NotAuthorized>
+    <Authorized>
+        <div class="card">
+            <h3>Create team</h3>
+            <div class="form-group field">
+                <label>Team name:</label>
+                <input type="text" @bind="teamName" @bind:event="oninput" />
+                @if (!string.IsNullOrEmpty(resultMsg))
+                {
+                    <label style="color: @color">@resultMsg</label>
+                }
+            </div>
+            <div class="button-row">
+                <button @onclick="Create" disabled="@(string.IsNullOrEmpty(teamName))" class="acceptbtn">
+                    Create team
+                </button>
+            </div>
         </div>
-        <div class="button-row">
-            <button @onclick="Create" disabled="@(string.IsNullOrEmpty(teamName))" class="acceptbtn">
-                Create team
-            </button>
-        </div>
-    </div>
-}
+    </Authorized>
+</AuthorizeView>
 
 @code {
     private string teamName = "";
+    public int id { get; private set; }
 
     private string resultMsg = "";
     private string color = "";
@@ -37,8 +41,10 @@ else {
 
         try 
         {
-            await userService.InitializeAsync();
-            await teamService.CreateAsync(new TeamCreateDTO(teamName, userService.User.Id));
+            id = Int32.Parse(asp.GetAuthenticationStateAsync().Result
+                .User.Claims.First(c => c.Type.Equals("Id")).Value);
+
+            await teamService.CreateAsync(new TeamCreateDTO(teamName, id));
 
             teamName = "";
             color = "green";

@@ -14,19 +14,10 @@ namespace HttpClients.Implementations
     public class UserHttpClient : IUserService
     {
         private readonly HttpClient client;
-        private readonly IStorageService storageService;
-        
-        public User? User { get; private set; }
 
-        public UserHttpClient(HttpClient client, IStorageService storageService)
+        public UserHttpClient(HttpClient client)
         {
             this.client = client;
-            this.storageService = storageService;
-        }
-
-        public async Task InitializeAsync()
-        {
-            User = await storageService.GetUser("logged");
         }
 
         public async Task<User> CreateAsync(UserCreationDTO dto)
@@ -119,30 +110,6 @@ namespace HttpClients.Implementations
                 throw new Exception(content);
             }
 
-        }
-
-        public async Task LoginAsync(UserLoginDTO dto)
-        {
-            HttpResponseMessage response = await client.PostAsJsonAsync("/api/users/authenticate", dto);
-            string result = await response.Content.ReadAsStringAsync();
-
-            if (!response.IsSuccessStatusCode)
-            {
-                throw new Exception(result);
-            }
-
-            User = JsonSerializer.Deserialize<User>(result, new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true
-            })!;
-
-            await storageService.SetUser("logged", User);
-        }
-
-        public async Task LogoutAsync()
-        {
-            User = null;
-            await storageService.DeleteUser("logged");
         }
 
         public async Task UpdateAsync(UserUpdateDTO dto)

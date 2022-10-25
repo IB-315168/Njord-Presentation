@@ -1,16 +1,15 @@
 ﻿@page "/"
-@using HttpClients.ClientInterfaces
-@inject IUserService userService
 
 <PageTitle>Index</PageTitle>
 
-@if (userService.User != null) {
-    fullName = userService.User.FullName;
-    <h1>Hello, @fullName!</h1>
-}
-else {
-    <h1>Hello, World!</h1>
-}
+<AuthorizeView>
+    <NotAuthorized>
+        <h1>Hello, World!</h1>
+    </NotAuthorized>
+    <Authorized>
+        <h1>Hello, @context.User.Identity.Name</h1>
+    </Authorized>
+</AuthorizeView>
 
 
 Welcome to your new app.
@@ -18,10 +17,5 @@ Welcome to your new app.
 <SurveyPrompt Title="How is Blazor working for you?" />
 
 @code {
-    private string fullName = "";
-
-    protected override async Task OnInitializedAsync()
-    {
-        await userService.InitializeAsync();
-    }
+    
 }

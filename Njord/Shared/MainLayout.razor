@@ -1,24 +1,30 @@
 ﻿@inherits LayoutComponentBase
 @using HttpClients.ClientInterfaces
-@inject IUserService userService
+@inject IAuthService authService
 @inject NavigationManager navMgr
 
 <div class="page">
-    <div class="sidebar">
-        <NavMenu />
-    </div>
+    <AuthorizeView>
+        <Authorized>
+            <div class="sidebar">
+                <NavMenu />
+            </div>
+        </Authorized>
+    </AuthorizeView>
+    
 
     <main>
         <div class="top-row px-4">
-            @if (userService.User != null)
-            {
-                <a href="profile/@userService.User.Id">@userService.User.UserName</a>
-                <a href="#" @onclick="LogOut">Log out</a>
-            }
-            else {
-                <a href="login">Log in</a>
-                <a href="signup">Sign up</a>
-            }           
+            <AuthorizeView>
+                <NotAuthorized>
+                    <a href="login">Log in</a>
+                    <a href="signup">Sign up</a>
+                </NotAuthorized>
+                <Authorized>
+                    <a href="profile/@context.User.Claims.First(c => c.Type.Equals("Id")).Value">@context.User.Identity.Name</a>
+                    <a href="#" @onclick="LogOut">Log out</a>
+                </Authorized>
+            </AuthorizeView>          
         </div>
 
         <article class="content px-4">
@@ -28,15 +34,8 @@
 </div>
 
 @code {
-    private string fullName = "";
-
-    protected override async Task OnInitializedAsync()
-    {
-        await userService.InitializeAsync();
-    }
-
     private async Task LogOut() {
-        await userService.LogoutAsync();
-        navMgr.NavigateTo("/", forceLoad: true);
+        await authService.LogoutAsync();
+        navMgr.NavigateTo("/");
     }
 }

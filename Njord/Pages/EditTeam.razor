@@ -4,32 +4,37 @@
 @using HttpClients.ClientInterfaces
 @using Microsoft.AspNetCore.Components
 @using UIComponents
-@inject IUserService userService
+@inject IAuthService authService
 @inject ITeamService teamService
 @inject NavigationManager navMgr
 
 @if(teamEdited == null) {
     <label>Loading team...</label>
 }
-else if (userService.User == null) {
-    <label>You must be logged in to perform this action.</label>
-}
-else if (teamEdited.TeamLeader.Id != userService.User.Id) {
-    <label>You are not authorized to perform this action.</label>
-}
 else {
-    <h3>EditTeam - @teamEdited.Name</h3>
+    <AuthorizeView>
+        <NotAuthorized><label>You must be logged in to perform this action.</label></NotAuthorized>
+        <Authorized>
+            @if (teamEdited.TeamLeader.Id != 5)
+            {
+                <label>You are not authorized to perform this action.</label>
+            } else {
+                <h3>EditTeam - @teamEdited.Name</h3>
 
-    <div class="form-group">
-        <div class="form-group field">
-            <label>Team name:</label>
-            <input type="text" @bind="teamName"/>
-        </div>
-        <button class="acceptbtn" @onclick="SaveChanges">Save changes</button>
-    </div>
-    <h4>Manage team members</h4>
-    <SearchUser Edit=true teamMembers="teamEdited.members" OnChange="@((user) => ChangeToTeam(user))"></SearchUser>
+                <div class="form-group">
+                    <div class="form-group field">
+                        <label>Team name:</label>
+                        <input type="text" @bind="teamName" />
+                    </div>
+                    <button class="acceptbtn" @onclick="SaveChanges">Save changes</button>
+                </div>
+                <h4>Manage team members</h4>
+                <SearchUser Edit=true teamMembers="teamEdited.members" OnChange="@((user) => ChangeToTeam(user))"></SearchUser>
+            }
+        </Authorized>
+    </AuthorizeView>  
 }
+    
 
 @if (!string.IsNullOrEmpty(msg))
 {
@@ -66,7 +71,7 @@ else {
         }
     }
 
-    private async Task ChangeToTeam(User user) {
+    private void ChangeToTeam(User user) {
         if(dto.members.Contains(user)) {
             dto.members.Remove(user);
             Console.WriteLine($"Removed - {user.FullName} - {dto.members.Count()}");

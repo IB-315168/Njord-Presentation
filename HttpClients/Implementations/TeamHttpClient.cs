@@ -14,12 +14,10 @@ namespace HttpClients.Implementations
     public class TeamHttpClient : ITeamService
     {
         private readonly HttpClient client;
-        private readonly IStorageService storageService;
 
-        public TeamHttpClient(HttpClient client, IStorageService storageService)
+        public TeamHttpClient(HttpClient client)
         {
             this.client = client;
-            this.storageService = storageService;
         }
 
         public async Task<Team> CreateAsync(TeamCreateDTO dto)
