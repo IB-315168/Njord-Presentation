@@ -23,7 +23,7 @@ else
     {
         <div class="editProfile">
             <button class="acceptbtn" @onclick="@(() => navMgr.NavigateTo($"/editTeam/{teamSelected.Id}"))">Edit team</button> @* Navigate to EditTeam*@
-            <button class="deletebtn">Delete team</button> @*@onclick="Delete Team"*@
+            <button class="deletebtn" @onclick="DeleteTeam">Delete team</button>
         </div>
     }
     <div class="details">
@@ -65,6 +65,12 @@ else
             </table>
         </div>
     }
+    <Popup ShowPopup="showPopup">
+        <h3>Warning</h3>
+        <label>You are about to delete this team. Confirm that action by typing your password in field below.</label>
+        <input type="text" @bind="removeConfirmation" />
+        <button disabled="@(string.IsNullOrEmpty(removeConfirmation) || !userService.User.Password.Equals(removeConfirmation))" @onclick="Proceed">Confirm</button>
+    </Popup>
 }
 
 @code {
@@ -74,6 +80,8 @@ else
 
     private Team teamSelected = null!;
 
+    private bool showPopup = false;
+    private string removeConfirmation = "";
 
     protected override async Task OnInitializedAsync()
     {
@@ -82,6 +90,24 @@ else
         {
             await userService.InitializeAsync();
             teamSelected = await teamService.GetByIdAsync(Id);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            msg = e.Message;
+        }
+    }
+
+    private void DeleteTeam() {
+        showPopup = true;
+    }
+
+    private async Task Proceed() {
+        msg = "";
+        try
+        {
+            await teamService.DeleteAsync(Id);
+            navMgr.NavigateTo("/", forceLoad: true);
         }
         catch (Exception e)
         {

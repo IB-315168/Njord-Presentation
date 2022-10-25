@@ -13,5 +13,7 @@ namespace HttpClients.ClientInterfaces
         Task<Team> CreateAsync(TeamCreateDTO dto);
         Task<Team> GetByIdAsync(int id);
         Task<IEnumerable<TeamBasicDTO>> GetByUserIdAsync(int id);
+        Task UpdateAsync(TeamUpdateDTO dto);
+        Task DeleteAsync(int id);
     }
 }

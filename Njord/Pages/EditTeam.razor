@@ -43,7 +43,7 @@ else {
     private Team teamEdited = null!;
     private string msg = "";
 
-    private ICollection<User> spoofList;
+    private TeamUpdateDTO dto = null!;
     private string teamName = "";
 
     protected override async Task OnInitializedAsync()
@@ -51,7 +51,12 @@ else {
         try {
             teamEdited = await teamService.GetByIdAsync(Id);
             teamName = teamEdited.Name;
-            spoofList = new List<User>();
+            dto = new TeamUpdateDTO(Id)
+            {
+                Name = teamName,
+                TeamLeader = teamEdited.TeamLeader,
+                members = teamEdited.members
+            };
         }
         catch (Exception e)
         {
@@ -62,16 +67,25 @@ else {
     }
 
     private async Task ChangeToTeam(User user) {
-        if(spoofList.Contains(user)) {
-            spoofList.Remove(user);
-            Console.WriteLine($"Removed - {user.FullName} - {spoofList.Count()}");
+        if(dto.members.Contains(user)) {
+            dto.members.Remove(user);
+            Console.WriteLine($"Removed - {user.FullName} - {dto.members.Count()}");
         } else {
-            spoofList.Add(user);
-            Console.WriteLine($"Added - {user.FullName} - {spoofList.Count()}");
+            dto.members.Add(user);
+            Console.WriteLine($"Added - {user.FullName} - {dto.members.Count()}");
         }
     }
 
     private async Task SaveChanges() {
-        navMgr.NavigateTo($"/team/{teamEdited.Id}");
+        try {
+            dto.Name = teamName;
+            await teamService.UpdateAsync(dto);
+            navMgr.NavigateTo($"/team/{teamEdited.Id}");
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            msg = e.Message;
+        }
     }
 }
