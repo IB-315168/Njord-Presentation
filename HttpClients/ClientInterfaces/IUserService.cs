@@ -10,7 +10,7 @@ namespace HttpClients.ClientInterfaces
 {
     public interface IUserService
     {
-        Task<User> CreateAsync(UserCreationDTO dto);
+        Task<User> CreateAsync(UserCreateDTO dto);
         Task<UserBasicDTO> GetByIdAsync(int id);
         Task<ICollection<User>> GetAsync(
             string? userName,

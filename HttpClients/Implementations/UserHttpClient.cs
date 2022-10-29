@@ -20,7 +20,7 @@ namespace HttpClients.Implementations
             this.client = client;
         }
 
-        public async Task<User> CreateAsync(UserCreationDTO dto)
+        public async Task<User> CreateAsync(UserCreateDTO dto)
         {
             HttpResponseMessage response = await client.PostAsJsonAsync("/api/users", dto);
             string result = await response.Content.ReadAsStringAsync();

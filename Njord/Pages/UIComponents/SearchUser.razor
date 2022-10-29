@@ -74,6 +74,8 @@
     [Parameter]
     public bool Edit { get; set; }
     [Parameter]
+    public User teamLeader { get; set; }
+    [Parameter]
     public ICollection<User> users { get; set; }
     [Parameter]
     public ICollection<User> teamMembers { get; set; }
@@ -90,12 +92,15 @@
         if(teamMembers == null) {
             teamMembers = new List<User>();
         }
-        users = await userService.GetAsync(userName, email, fullName);
+        Search();
     }
 
     private async Task Search() {
         try {
             users = await userService.GetAsync(userName, email, fullName);
+            if (Edit) {
+                users.Remove(teamLeader);
+            }
         }
         catch (Exception e) 
         {
