@@ -15,7 +15,7 @@ else {
     <AuthorizeView>
         <NotAuthorized><label>You must be logged in to perform this action.</label></NotAuthorized>
         <Authorized>
-            @if (teamEdited.TeamLeader.Id != 5)
+            @if (!@context.User.Claims.First(c => c.Type.Equals("Id")).Value.Equals(teamEdited.TeamLeader.Id.ToString()))
             {
                 <label>You are not authorized to perform this action.</label>
             } else {
