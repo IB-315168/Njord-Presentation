@@ -18,9 +18,6 @@
                 <label>Team assigned:</label>
                 <EditForm Context="dtoContext" Model="@dto">
                     <InputSelect @bind-Value="@dto.TeamId">
-                        @if(userTeams == null) {
-                            <option value="">Loading teams...</option>
-                        }
 
                         @foreach(TeamBasicDTO teamBasicDTO in userTeams) {
                             <option value=@teamBasicDTO.Id>@teamBasicDTO.Name</option>
@@ -37,7 +34,7 @@
             </div>
             <div class="button-row">
                 <button @onclick="Create" disabled="@(string.IsNullOrEmpty(projectName))" class="acceptbtn">
-                    Create team
+                    Create project
                 </button>
             </div>
         </div>
@@ -104,7 +101,7 @@
 
             projectName = "";
             color = "green";
-            resultMsg = "Team successfully created";
+            resultMsg = "Project successfully created";
         }
         catch (Exception e)
         {
