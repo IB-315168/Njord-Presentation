@@ -176,19 +176,22 @@
 .user-projects {
     width: 15%;
     box-sizing: border-box;
+    display: inline;
 }
 
     .user-projects .team-card {
         box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+        margin: 5px;
         border-radius: 5px;
-        padding: 5px;
+        float: left;
+        padding: 10px;
         transition: 0.3s;
     }
 
         .user-projects .team-card:hover {
             box-shadow: none;
             background-color: rgb(37, 150, 190);
-            padding: 10px;
+            padding: 12px;
             color: white;
         }
 
