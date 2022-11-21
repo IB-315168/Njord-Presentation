@@ -1,0 +1,117 @@
+﻿@page "/CreateProject"
+@using Domain.DTOs
+@using HttpClients.ClientInterfaces
+@inject ITeamService teamService
+@inject IProjectService projectService
+@inject AuthenticationStateProvider asp
+
+<AuthorizeView>
+    <NotAuthorized>
+        <label>You must be logged in to perform that action.</label>
+    </NotAuthorized>
+    <Authorized>
+        <div class="card">
+            <h3>Create project</h3>
+            <div class="form-group field">
+                <label>Project name:</label>
+                <input type="text" @bind="projectName" @bind:event="oninput" />
+                <label>Team assigned:</label>
+                <EditForm Context="dtoContext" Model="@dto">
+                    <InputSelect @bind-Value="@dto.TeamId">
+                        @if(userTeams == null) {
+                            <option value="">Loading teams...</option>
+                        }
+
+                        @foreach(TeamBasicDTO teamBasicDTO in userTeams) {
+                            <option value=@teamBasicDTO.Id>@teamBasicDTO.Name</option>
+                        }
+                    </InputSelect>
+                    <label>Deadline (optional):</label>
+                    <InputDate @bind-Value="@dto.Deadline"></InputDate>
+                </EditForm>
+
+                @if (!string.IsNullOrEmpty(resultMsg))
+                {
+                    <label style="color: @color">@resultMsg</label>
+                }
+            </div>
+            <div class="button-row">
+                <button @onclick="Create" disabled="@(string.IsNullOrEmpty(projectName))" class="acceptbtn">
+                    Create team
+                </button>
+            </div>
+        </div>
+    </Authorized>
+</AuthorizeView>
+
+@code {
+    private int teamId { get; set; }
+    private string projectName { get; set; }
+    private DateTime? deadline { get; set; }
+    private ProjectCreateDTO dto = new ProjectCreateDTO();
+
+    private List<TeamBasicDTO> userTeams = new List<TeamBasicDTO>();
+
+    private string color { get; set; }
+    private string resultMsg { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        resultMsg = "";
+
+        try {
+            int id = Int32.Parse(asp.GetAuthenticationStateAsync().Result
+                .User.Claims.First(c => c.Type.Equals("Id")).Value);
+            string teamLeaderName = asp.GetAuthenticationStateAsync().Result
+                .User.Claims.First(c => c.Type.Equals("FullName")).Value;
+
+            IEnumerable<TeamBasicDTO> allTeams = await teamService.GetByUserIdAsync(id);
+
+            foreach(TeamBasicDTO team in allTeams) {
+                if(team.TeamLeaderName.Equals(teamLeaderName)) {
+                    userTeams.Add(team);
+                }
+            }
+
+        } catch (Exception e) {
+            Console.WriteLine(e);
+            resultMsg = e.Message;
+            color = "red";
+        }
+    }
+
+    private async Task Create()
+    {
+        resultMsg = "";
+
+        try
+        {
+            int id = Int32.Parse(asp.GetAuthenticationStateAsync().Result
+                .User.Claims.First(c => c.Type.Equals("Id")).Value);
+
+                dto.Name = projectName;
+
+            //    Console.WriteLine(dto.TeamId);
+            //dto.Name = projectName;
+            //dto.TeamId = teamId;
+            //if(deadline != null) {
+            //    dto.Deadline = (DateTime) deadline;
+            //}
+
+            Console.WriteLine(dto.TeamId);
+
+            await projectService.CreateAsync(dto);
+
+            projectName = "";
+            color = "green";
+            resultMsg = "Team successfully created";
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            resultMsg = e.Message;
+            color = "red";
+        }
+    }
+
+}

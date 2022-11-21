@@ -24,7 +24,7 @@ namespace Domain.Models
             StartDate = startDate;
         }
 
-        public bool Equals(ProjectEntity? other)
+        public bool Equals(Project? other)
         {
             if(other == null)
             {

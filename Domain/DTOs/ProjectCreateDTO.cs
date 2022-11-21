@@ -2,15 +2,8 @@
 
 public class ProjectCreateDTO
 {
-    public string Name { get; }
-    public int TeamId { get; }
-    public DateTime Deadline { get; }
-    
-    public ProjectCreateDTO(string name, int teamId, DateTime deadline)
-    {
-        Name = name;
-        TeamId = teamId;
-        Deadline = deadline;
-    }
+    public string Name { get; set; }
+    public int TeamId { get; set; }
+    public DateTime Deadline { get; set; }
     
 }
