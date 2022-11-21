@@ -14,5 +14,6 @@ namespace HttpClients.ClientInterfaces
         Task UpdateAsync(ProjectUpdateDTO dto);
         Task DeleteAsync(int id);
         Task<Project> GetByIdAsync(int id);
+        Task<ICollection<BasicProjectDTO>> GetByUserIdAsync(int userId);
     }
 }

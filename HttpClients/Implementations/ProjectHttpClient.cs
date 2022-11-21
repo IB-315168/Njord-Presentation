@@ -67,6 +67,24 @@ namespace HttpClients.Implementations
             return project;
         }
 
+        public async Task<ICollection<BasicProjectDTO>> GetByUserIdAsync(int userId)
+        {
+            HttpResponseMessage response = await client.GetAsync("/api/projects?userId=" + userId);
+            string content = await response.Content.ReadAsStringAsync();
+
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new Exception(content);
+            }
+
+            ICollection<BasicProjectDTO> projects = JsonSerializer.Deserialize<ICollection<BasicProjectDTO>>(content, new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            })!;
+
+            return projects;
+        }
+
         public async Task UpdateAsync(ProjectUpdateDTO dto)
         {
             string dtoAsJson = JsonSerializer.Serialize(dto);
