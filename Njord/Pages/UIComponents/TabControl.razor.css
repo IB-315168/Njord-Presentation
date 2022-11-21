@@ -1,0 +1,7 @@
+﻿.btn-group {
+    background-color: #194A7E;
+}
+
+    .btn-group:hover {
+        background-color: rgb(37, 150, 190);
+    }

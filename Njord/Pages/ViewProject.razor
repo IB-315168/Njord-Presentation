@@ -1,0 +1,54 @@
+﻿@page "/project/{id:int}"
+@using Domain.DTOs
+@using Domain.Models
+@using HttpClients.ClientInterfaces
+@using Microsoft.AspNetCore.Components
+@using UIComponents
+@inject IProjectService projectService
+@inject NavigationManager navMgr
+<AuthorizeView>
+    <NotAuthorized>
+        <label>You must be logged in to perform that action</label>
+    </NotAuthorized>
+    <Authorized>
+        @if(projectLoaded == null) {
+            <h3>Loading...</h3>
+        } else {
+            <h3>@projectLoaded.Name</h3>
+            <hr />
+            <TabControl>
+                <TabPage Text="Calendar">
+                    <p>Calendar placeholder</p>
+                </TabPage>
+                <TabPage Text="Board">
+                    <p>Board placeholder</p>
+                </TabPage>
+                <TabPage Text="Requirements">
+                    <p>Requirements placeholder</p>
+                </TabPage>
+            </TabControl>
+        }
+    </Authorized>
+</AuthorizeView>
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+    private string msg = "";
+
+    private Project projectLoaded { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        msg = "";
+        try
+        {
+            projectLoaded = await projectService.GetByIdAsync(Id);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            msg = e.Message;
+        }
+    }
+}
