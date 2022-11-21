@@ -68,7 +68,7 @@ else {
             <Popup ShowPopup="showPopup">
                 <h3>Warning</h3>
                 <label>You are about to delete this team. Confirm that action by typing <b>@teamSelected.Name</b> in field below.</label>
-                <input type="text" @bind="removeConfirmation" />
+                <input type="text" @bind="removeConfirmation" @bind:event="oninput"/>
                 <button disabled="@(string.IsNullOrEmpty(removeConfirmation) || !removeConfirmation.Equals(teamSelected.Name))" @onclick="Proceed">Confirm</button>
             </Popup>
         </Authorized>

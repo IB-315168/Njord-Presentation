@@ -1,0 +1,60 @@
+﻿@page "/MyProjects"
+@using Domain.DTOs
+@using Domain.Models
+@using HttpClients.ClientInterfaces
+@using Microsoft.AspNetCore.Components
+@using UIComponents
+@inject IProjectService projectService
+@inject NavigationManager navMgr
+@inject AuthenticationStateProvider asp
+
+<AuthorizeView>
+    <NotAuthorized>
+        <label>You must be logged in to perform that action.</label>
+    </NotAuthorized>
+    <Authorized>
+        <div class="user-projects">
+            <h3>Projects</h3>
+            @if(userProjects == null) {
+                <label>Loading...</label>
+            }
+            else if (userProjects.Count() == 0)
+            {
+                <label>This user does not belong to any teams.</label>
+            }
+            else
+            {
+                @foreach (BasicProjectDTO project in userProjects)
+                {
+                    <div class="team-card" @onclick="@(() => navMgr.NavigateTo($"/project/{project.Id}"))">
+                        <div id="teamName">@project.ProjectName</div>
+                        <label id="teamLeaderName">@project.TeamName</label>
+                    </div>
+                }
+            }
+        </div>
+    </Authorized>
+</AuthorizeView>
+
+@code {
+    private ICollection<BasicProjectDTO> userProjects { get; set; }
+
+    private string msg = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        msg = "";
+        try
+        {
+            int id = Int32.Parse(asp.GetAuthenticationStateAsync().Result
+                .User.Claims.First(c => c.Type.Equals("Id")).Value);
+
+            userProjects = await projectService.GetByUserIdAsync(id);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            msg = e.Message;
+        }
+    }
+}
