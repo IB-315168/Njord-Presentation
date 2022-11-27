@@ -16,10 +16,14 @@
         @if(projectLoaded == null) {
             <h3>Loading...</h3>
         } else {
-            <div class="editProfile">
+            //TODO: pass actual team instead
+            @if (@context.User.Claims.First(c => c.Type.Equals("Id")).Value.Equals(projectLoaded.TeamId))
+            {
+                <div class="editProfile">
                     <button class="acceptbtn" @onclick="@(() => navMgr.NavigateTo($"/editProject/{Id}"))">Edit project</button>
-                <button class="deletebtn" @onclick="@(() => navMgr.NavigateTo("/"))">Delete project</button>
+                    <button class="deletebtn" @onclick="@(() => navMgr.NavigateTo("/"))">Delete project</button>
                 </div>
+            }
             <h3>@projectLoaded.Name</h3>
             <hr />
             <TabControl>
@@ -39,7 +43,7 @@
                     } else {
                         @foreach (Requirement requirement in projectLoaded.Requirements)
                         {
-                            <p>@requirement.content</p>
+                            <p style="border: 1px solid; padding: 5px">@requirement.content</p>
                         }
                     }                    
                 </TabPage>

@@ -51,10 +51,12 @@
                     {
                         @foreach (Requirement requirement in projectLoaded.Requirements)
                         {
-                            <p>@requirement.content</p>
+                            <RequirementField requirement="requirement"></RequirementField>
                         }
                     }
-                    <p><input type="text" @bind="@newRequirement"/><button @onclick="AddRequirement" disabled="@(string.IsNullOrEmpty(newRequirement))">Add requirement</button></p>
+                    <div class="form-group field">
+                        <input style="width:500px" type="text" @bind="@newRequirement"/><button class="acceptbtn" @onclick="AddRequirement" disabled="@(string.IsNullOrEmpty(newRequirement))">Add requirement</button>
+                        </div>
                 </TabPage>
             </TabControl>
         }

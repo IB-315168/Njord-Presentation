@@ -1,0 +1,36 @@
+﻿@namespace UIComponents
+@using Domain.Models
+
+<div class="req-field">
+    @if(!Edit) {
+        <label><b>@requirement.content</b></label>
+        <button class="acceptbtn" @onclick="() => Edit = !Edit">Edit</button>
+    } else {
+        <input type="text" @bind="@requirement.content">
+        <button class="acceptbtn" @onclick="Save">Save</button>
+        <button class="acceptbtn" @onclick="Cancel">Cancel</button>
+    }
+</div>
+
+@code {
+    public bool Edit = false;
+    [Parameter]
+    public Requirement requirement { get; set; }
+
+    private string reqContent { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        reqContent = requirement.content;
+    }
+
+    private void Cancel() {
+        requirement.content = reqContent;
+        Edit = !Edit;
+    }
+
+    private void Save() {
+        reqContent = requirement.content;
+        Edit = !Edit;
+    }
+}
