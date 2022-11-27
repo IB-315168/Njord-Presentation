@@ -11,9 +11,9 @@ namespace HttpClients.ClientInterfaces
 {
     public interface IAuthService
     {
-        public Task LoginAsync(UserLoginDTO dto);
+        public Task LoginAsync(MemberLoginDTO dto);
         public Task LogoutAsync();
-        public Task RegisterAsync(User user);
+        public Task RegisterAsync(Member user);
         public Task<ClaimsPrincipal> GetAuthAsync();
 
         public Action<ClaimsPrincipal> OnAuthStateChanged { get; set; }

@@ -4,7 +4,7 @@ public class Team
 {
     public int Id { get; set; }
     public string Name { get; set; }
-    public User TeamLeader { get; set; }
-    public ICollection<User> members { get; set; }
+    public Member TeamLeader { get; set; }
+    public ICollection<Member> members { get; set; }
 
 }

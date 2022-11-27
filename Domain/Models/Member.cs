@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Domain.Models
 {
-    public class User : IEquatable<User>
+    public class Member : IEquatable<Member>
     {
         public int Id { get; set; }
         public string FullName { get; set; }
@@ -15,7 +15,7 @@ namespace Domain.Models
         public string Password { get; set; }
         public Dictionary<string, bool[]> RecurAvailablity;
 
-        public bool Equals(User? other)
+        public bool Equals(Member? other)
         {
             if(other == null)
             {

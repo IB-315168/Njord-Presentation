@@ -11,18 +11,18 @@ using System.Threading.Tasks;
 
 namespace HttpClients.Implementations
 {
-    public class UserHttpClient : IUserService
+    public class MemberHttpClient : IMemberService
     {
         private readonly HttpClient client;
 
-        public UserHttpClient(HttpClient client)
+        public MemberHttpClient(HttpClient client)
         {
             this.client = client;
         }
 
-        public async Task<User> CreateAsync(UserCreateDTO dto)
+        public async Task<Member> CreateAsync(MemberCreateDTO dto)
         {
-            HttpResponseMessage response = await client.PostAsJsonAsync("/api/users", dto);
+            HttpResponseMessage response = await client.PostAsJsonAsync("/api/members", dto);
             string result = await response.Content.ReadAsStringAsync();
 
             if (!response.IsSuccessStatusCode)
@@ -30,7 +30,7 @@ namespace HttpClients.Implementations
                 throw new Exception(result);
             }
 
-            User user = JsonSerializer.Deserialize<User>(result, new JsonSerializerOptions
+            Member user = JsonSerializer.Deserialize<Member>(result, new JsonSerializerOptions
             {
                 PropertyNameCaseInsensitive = true
             })!;
@@ -38,10 +38,10 @@ namespace HttpClients.Implementations
             return user;
         }
 
-        public async Task<UserBasicDTO> GetByIdAsync(int id)
+        public async Task<MemberBasicDTO> GetByIdAsync(int id)
         {
 
-            HttpResponseMessage response = await client.GetAsync($"/api/users/{id}");
+            HttpResponseMessage response = await client.GetAsync($"/api/members/{id}");
             string result = await response.Content.ReadAsStringAsync();
 
             if (!response.IsSuccessStatusCode)
@@ -49,7 +49,7 @@ namespace HttpClients.Implementations
                 throw new Exception(result);
             }
 
-            UserBasicDTO profile = JsonSerializer.Deserialize<UserBasicDTO>(result, new JsonSerializerOptions
+            MemberBasicDTO profile = JsonSerializer.Deserialize<MemberBasicDTO>(result, new JsonSerializerOptions
             {
                 PropertyNameCaseInsensitive = true
             })!;
@@ -57,11 +57,11 @@ namespace HttpClients.Implementations
             return profile;
         }
 
-        public async Task<ICollection<User>> GetAsync(string? userName, string? email, string? fullName)
+        public async Task<ICollection<Member>> GetAsync(string? userName, string? email, string? fullName)
         {
             string query = ConstructQuery(userName, email, fullName);
 
-            HttpResponseMessage response = await client.GetAsync("/api/users" + query);
+            HttpResponseMessage response = await client.GetAsync("/api/members" + query);
             string content = await response.Content.ReadAsStringAsync();
 
             if (!response.IsSuccessStatusCode)
@@ -69,7 +69,7 @@ namespace HttpClients.Implementations
                 throw new Exception(content);
             }
 
-            ICollection<User> users = JsonSerializer.Deserialize<ICollection<User>>(content, new JsonSerializerOptions
+            ICollection<Member> users = JsonSerializer.Deserialize<ICollection<Member>>(content, new JsonSerializerOptions
             {
                 PropertyNameCaseInsensitive = true
             })!;
@@ -102,7 +102,7 @@ namespace HttpClients.Implementations
 
         public async Task DeleteAsync(int id)
         {
-            HttpResponseMessage response = await client.DeleteAsync($"/api/users/{id}");
+            HttpResponseMessage response = await client.DeleteAsync($"/api/members/{id}");
 
             if (!response.IsSuccessStatusCode)
             {
@@ -112,12 +112,12 @@ namespace HttpClients.Implementations
 
         }
 
-        public async Task UpdateAsync(UserUpdateDTO dto)
+        public async Task UpdateAsync(MemberUpdateDTO dto)
         {
             string dtoAsJson = JsonSerializer.Serialize(dto);
             StringContent body = new StringContent(dtoAsJson, Encoding.UTF8, "application/json");
 
-            HttpResponseMessage response = await client.PatchAsync("/api/users", body);
+            HttpResponseMessage response = await client.PatchAsync("/api/members", body);
             if (!response.IsSuccessStatusCode)
             {
                 string content = await response.Content.ReadAsStringAsync();

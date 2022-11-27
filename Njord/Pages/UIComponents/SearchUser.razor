@@ -3,7 +3,7 @@
 @using Domain.Models
 @using System.Diagnostics.CodeAnalysis
 @using HttpClients.ClientInterfaces
-@inject IUserService userService
+@inject IMemberService userService
 @inject NavigationManager navMgr
 
 <div class="form-group">
@@ -46,7 +46,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (User user in users)
+                    @foreach (Member user in users)
                     {
                         <tr>
                             <td><a href="/profile/@user.Id">@user.UserName</a></td>
@@ -74,13 +74,13 @@
     [Parameter]
     public bool Edit { get; set; }
     [Parameter]
-    public User teamLeader { get; set; }
+    public Member teamLeader { get; set; }
     [Parameter]
-    public ICollection<User> users { get; set; }
+    public ICollection<Member> users { get; set; }
     [Parameter]
-    public ICollection<User> teamMembers { get; set; }
+    public ICollection<Member> teamMembers { get; set; }
     [Parameter]
-    public EventCallback<User> OnChange { get; set; }
+    public EventCallback<Member> OnChange { get; set; }
 
     private string userName = "";
     private string email = "";
@@ -90,7 +90,7 @@
     protected override async Task OnInitializedAsync()
     {
         if(teamMembers == null) {
-            teamMembers = new List<User>();
+            teamMembers = new List<Member>();
         }
         await Search();
     }

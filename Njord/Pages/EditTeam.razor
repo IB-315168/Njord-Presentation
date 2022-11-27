@@ -71,7 +71,7 @@ else {
         }
     }
 
-    private void ChangeToTeam(User user) {
+    private void ChangeToTeam(Member user) {
         if(dto.members.Contains(user)) {
             dto.members.Remove(user);
             Console.WriteLine($"Removed - {user.FullName} - {dto.members.Count()}");

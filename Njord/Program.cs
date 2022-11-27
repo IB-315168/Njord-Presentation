@@ -16,7 +16,7 @@ builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https:/
 
 builder.Services.AddScoped<DialogService>();
 
-builder.Services.AddScoped<IUserService, UserHttpClient>();
+builder.Services.AddScoped<IMemberService, MemberHttpClient>();
 builder.Services.AddScoped<ITeamService, TeamHttpClient>();
 builder.Services.AddScoped<IAuthService, JwtAuthService>();
 builder.Services.AddScoped<IProjectService, ProjectHttpClient>();

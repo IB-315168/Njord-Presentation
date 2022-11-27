@@ -62,7 +62,7 @@ namespace HttpClients.Implementations
             return principal;
         }
 
-        public async Task LoginAsync(UserLoginDTO dto)
+        public async Task LoginAsync(MemberLoginDTO dto)
         {
             HttpResponseMessage response = await client.PostAsJsonAsync("https://localhost:7033/api/auth", dto);
             string responseContent = await response.Content.ReadAsStringAsync();
@@ -89,7 +89,7 @@ namespace HttpClients.Implementations
         }
 
         // TODO: Implement on re-route of register
-        public Task RegisterAsync(User user)
+        public Task RegisterAsync(Member user)
         {
             throw new NotImplementedException();
         }

@@ -4,7 +4,7 @@
 @using HttpClients.ClientInterfaces
 @using Microsoft.AspNetCore.Components
 @using UIComponents
-@inject IUserService userService
+@inject IMemberService userService
 @inject IAuthService authService
 @inject NavigationManager navMgr
 
@@ -43,16 +43,16 @@
 @code {
     [Parameter]
     public int Id { get; set; }
-    private UserUpdateDTO dto = null!;
+    private MemberUpdateDTO dto = null!;
     private string msg = "";
 
     protected override async Task OnInitializedAsync()
     {
         msg = "";
 
-        UserBasicDTO userData = await userService.GetByIdAsync(Id);
+        MemberBasicDTO userData = await userService.GetByIdAsync(Id);
 
-        dto = new UserUpdateDTO(Id)
+        dto = new MemberUpdateDTO(Id)
             {
                 UserName = userData.UserName,
                 Email = userData.Email,

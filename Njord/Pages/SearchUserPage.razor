@@ -1,7 +1,7 @@
 ﻿@page "/SearchUser"
 @using UIComponents
 @using HttpClients.ClientInterfaces
-@inject IUserService userService
+@inject IMemberService userService
 
 <AuthorizeView>
     <NotAuthorized><label>You must be logged in to perform this action.</label></NotAuthorized>

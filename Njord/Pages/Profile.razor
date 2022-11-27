@@ -4,7 +4,7 @@
 @using HttpClients.ClientInterfaces
 @using Microsoft.AspNetCore.Components
 @using UIComponents
-@inject IUserService userService
+@inject IMemberService userService
 @inject ITeamService teamService
 @inject IAuthService authService
 @inject NavigationManager navMgr
@@ -77,7 +77,7 @@ else  {
     public int Id { get; set; }
     private string msg = "";
 
-    private UserBasicDTO user = null!;
+    private MemberBasicDTO user = null!;
     private IEnumerable<TeamBasicDTO> userTeams = null!;
 
     private bool showPopup = false;

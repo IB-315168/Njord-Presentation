@@ -8,15 +8,15 @@ using System.Threading.Tasks;
 
 namespace HttpClients.ClientInterfaces
 {
-    public interface IUserService
+    public interface IMemberService
     {
-        Task<User> CreateAsync(UserCreateDTO dto);
-        Task<UserBasicDTO> GetByIdAsync(int id);
-        Task<ICollection<User>> GetAsync(
+        Task<Member> CreateAsync(MemberCreateDTO dto);
+        Task<MemberBasicDTO> GetByIdAsync(int id);
+        Task<ICollection<Member>> GetAsync(
             string? userName,
             string? email,
             string? fullName);
-        Task UpdateAsync(UserUpdateDTO dto);
+        Task UpdateAsync(MemberUpdateDTO dto);
         Task DeleteAsync(int id);
     }
 }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Domain.DTOs
 {
-    public class UserUpdateDTO
+    public class MemberUpdateDTO
     {
         public int Id { get; }
         public string UserName { get; set; }
@@ -14,7 +14,7 @@ namespace Domain.DTOs
         public string Password { get; set; }
         public Dictionary<string, bool[]> RecurAvailablity { get; set; }
 
-        public UserUpdateDTO(int Id)
+        public MemberUpdateDTO(int Id)
         {
             this.Id = Id;
         }
