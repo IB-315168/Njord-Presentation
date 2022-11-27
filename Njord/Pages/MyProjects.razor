@@ -15,16 +15,16 @@
     <Authorized>
         <div class="user-projects">
             <h3>Projects</h3>
-            @if(userProjects == null) {
+            @if(memberProjects == null) {
                 <label>Loading...</label>
             }
-            else if (userProjects.Count() == 0)
+            else if (memberProjects.Count() == 0)
             {
-                <label>This user does not belong to any teams.</label>
+                <label>This members does not belong to any teams.</label>
             }
             else
             {
-                @foreach (BasicProjectDTO project in userProjects)
+                @foreach (BasicProjectDTO project in memberProjects)
                 {
                     <div class="team-card" @onclick="@(() => navMgr.NavigateTo($"/project/{project.Id}"))">
                         <div id="teamName">@project.ProjectName</div>
@@ -37,7 +37,7 @@
 </AuthorizeView>
 
 @code {
-    private ICollection<BasicProjectDTO> userProjects { get; set; }
+    private ICollection<BasicProjectDTO> memberProjects { get; set; }
 
     private string msg = "";
 
@@ -49,7 +49,7 @@
             int id = Int32.Parse(asp.GetAuthenticationStateAsync().Result
                 .User.Claims.First(c => c.Type.Equals("Id")).Value);
 
-            userProjects = await projectService.GetByUserIdAsync(id);
+            memberProjects = await projectService.GetByUserIdAsync(id);
         }
         catch (Exception e)
         {

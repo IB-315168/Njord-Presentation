@@ -16,6 +16,10 @@
         @if(projectLoaded == null) {
             <h3>Loading...</h3>
         } else {
+            <div class="editProfile">
+                    <button class="acceptbtn" @onclick="@(() => navMgr.NavigateTo($"/editProject/{Id}"))">Edit project</button>
+                <button class="deletebtn" @onclick="@(() => navMgr.NavigateTo("/"))">Delete project</button>
+                </div>
             <h3>@projectLoaded.Name</h3>
             <hr />
             <TabControl>
@@ -30,7 +34,14 @@
                     <p>Board placeholder</p>
                 </TabPage>
                 <TabPage Text="Requirements">
-                    <p>Requirements placeholder</p>
+                    @if(projectLoaded.Requirements.Count() == 0) {
+                        <p>This project does not have any requirements</p>
+                    } else {
+                        @foreach (Requirement requirement in projectLoaded.Requirements)
+                        {
+                            <p>@requirement.content</p>
+                        }
+                    }                    
                 </TabPage>
             </TabControl>
         }

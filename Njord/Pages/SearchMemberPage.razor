@@ -1,4 +1,4 @@
-﻿@page "/SearchUser"
+﻿@page "/SearchMember"
 @using UIComponents
 @using HttpClients.ClientInterfaces
 @inject IMemberService userService
@@ -6,8 +6,8 @@
 <AuthorizeView>
     <NotAuthorized><label>You must be logged in to perform this action.</label></NotAuthorized>
     <Authorized>
-        <h3>Search Users</h3>
-        <SearchUser Edit=false></SearchUser>
+        <h3>Search Members</h3>
+        <SearchMember Edit=false></SearchMember>
     </Authorized>
 </AuthorizeView>
 

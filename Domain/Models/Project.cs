@@ -13,7 +13,7 @@ namespace Domain.Models
         public int TeamId { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime Deadline { get; set; }
-        ICollection<Requirement> Requirements { get; set; }
+        public ICollection<Requirement> Requirements { get; set; }
 
 
         public Project(int id, string name, int teamId, DateTime startDate)

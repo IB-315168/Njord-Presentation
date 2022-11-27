@@ -4,21 +4,21 @@
 @using HttpClients.ClientInterfaces
 @using Microsoft.AspNetCore.Components
 @using UIComponents
-@inject IMemberService userService
+@inject IMemberService memberService
 @inject ITeamService teamService
 @inject IAuthService authService
 @inject NavigationManager navMgr
 
-@if (user == null)
+@if (member == null)
 {
-    <label>Loading User profile..</label>
+    <label>Loading member profile..</label>
 }
 else  {
     <AuthorizeView>
         <NotAuthorized><label>You must be logged in to perform that action</label></NotAuthorized>
         <Authorized>
-            <h3>Profile - @user.FullName</h3>
-            @if (@context.User.Claims.First(c => c.Type.Equals("Id")).Value.Equals(user.Id.ToString()))
+            <h3>Profile - @member.FullName</h3>
+            @if (@context.User.Claims.First(c => c.Type.Equals("Id")).Value.Equals(member.Id.ToString()))
             {
                 <div class="editProfile">
                     <button class="acceptbtn" @onclick="@(() => navMgr.NavigateTo($"/EditProfile/{@context.User.Claims.First(c => c.Type.Equals("Id")).Value}"))">Edit profile</button>
@@ -29,27 +29,27 @@ else  {
                 <table>
                     <tr>
                         <td><b>Full name:</b></td>
-                        <td>@user.FullName</td>
+                        <td>@member.FullName</td>
                     </tr>
                     <tr>
                         <td><b>User name:</b></td>
-                        <td>@user.UserName</td>
+                        <td>@member.UserName</td>
                     </tr>
                     <tr>
                         <td><b>Email:</b></td>
-                        <td><a href="mailto:@user.Email">@user.Email</a></td>
+                        <td><a href="mailto:@member.Email">@member.Email</a></td>
                     </tr>
                 </table>
             </div>
             <div class="user-teams">
                 <h3>Teams</h3>
-                @if (userTeams.Count() == 0)
+                @if (memberTeams.Count() == 0)
                 {
                     <label>This user does not belong to any teams.</label>
                 }
                 else
                 {
-                    @foreach (TeamBasicDTO team in userTeams)
+                    @foreach (TeamBasicDTO team in memberTeams)
                     {
                         <div class="team-card" @onclick="@(() => navMgr.NavigateTo($"/team/{team.Id}"))">
                             <div id="teamName">@team.Name</div>
@@ -77,8 +77,8 @@ else  {
     public int Id { get; set; }
     private string msg = "";
 
-    private MemberBasicDTO user = null!;
-    private IEnumerable<TeamBasicDTO> userTeams = null!;
+    private MemberBasicDTO member = null!;
+    private IEnumerable<TeamBasicDTO> memberTeams = null!;
 
     private bool showPopup = false;
     private string removeConfirmation = "";
@@ -89,8 +89,8 @@ else  {
         msg = "";
         try
         {
-            user = await userService.GetByIdAsync(Id);
-            userTeams = await teamService.GetByUserIdAsync(Id);
+            member = await memberService.GetByIdAsync(Id);
+            memberTeams = await teamService.GetByUserIdAsync(Id);
         }
         catch (Exception e)
         {
@@ -108,7 +108,7 @@ else  {
         msg = "";
         try
         {
-            await userService.DeleteAsync(user.Id);
+            await memberService.DeleteAsync(member.Id);
             await authService.LogoutAsync();
             navMgr.NavigateTo("/");
         }

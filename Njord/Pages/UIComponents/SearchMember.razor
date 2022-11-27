@@ -3,7 +3,7 @@
 @using Domain.Models
 @using System.Diagnostics.CodeAnalysis
 @using HttpClients.ClientInterfaces
-@inject IMemberService userService
+@inject IMemberService memberService
 @inject NavigationManager navMgr
 
 <div class="form-group">
@@ -24,12 +24,12 @@
 </div>
 
 <div class="user-list">
-    @if (users == null) {
-        <label>Loading users...</label>
+    @if (members == null) {
+        <label>Loading members...</label>
     }
-    else if (!users.Any())
+    else if (!members.Any())
     {
-        <label>No users found matching criteria.</label>
+        <label>No members found matching criteria.</label>
     }
     else {
         <div class="members">
@@ -46,17 +46,18 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (Member user in users)
+                    @foreach (Member member in members)
                     {
                         <tr>
-                            <td><a href="/profile/@user.Id">@user.UserName</a></td>
-                            <td>@user.FullName</td>
-                            <td>@user.Email</td>
+                            <td><a href="/profile/@member.Id">@member.UserName</a></td>
+                            <td>@member.FullName</td>
+                            <td>@member.Email</td>
                             @if (Edit)
                             {
-                                <td><input type="checkbox" 
-                                    checked="@teamMembers.Contains(user)" 
-                                    @onchange="(arg) => OnChange.InvokeAsync(user)"/></td>
+                                <td><input type="checkbox"
+                               checked="@teamMembers.Contains(member)"
+                               @onchange="(arg) => OnChange.InvokeAsync(member)" />
+                                </td>
                             }
                         </tr>
                     }
@@ -76,7 +77,7 @@
     [Parameter]
     public Member teamLeader { get; set; }
     [Parameter]
-    public ICollection<Member> users { get; set; }
+    public ICollection<Member> members { get; set; }
     [Parameter]
     public ICollection<Member> teamMembers { get; set; }
     [Parameter]
@@ -97,9 +98,9 @@
 
     private async Task Search() {
         try {
-            users = await userService.GetAsync(userName, email, fullName);
+            members = await memberService.GetAsync(userName, email, fullName);
             if (Edit) {
-                users.Remove(teamLeader);
+                members.Remove(teamLeader);
             }
         }
         catch (Exception e) 

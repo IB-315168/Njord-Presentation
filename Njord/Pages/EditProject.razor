@@ -1,0 +1,104 @@
+﻿@page "/EditProject/{id:int}"
+@using UIComponents
+@using Domain.DTOs
+@using Domain.Models
+@using HttpClients.ClientInterfaces
+@using Microsoft.AspNetCore.Components
+@inject IProjectService projectService
+@inject NavigationManager navMgr
+@inject AuthenticationStateProvider asp
+
+<AuthorizeView>
+    <NotAuthorized>
+        <label>You must be logged in to perform that action.</label>
+    </NotAuthorized>
+    <Authorized>
+        @if(projectLoaded == null) {
+            <label>Loading project form...</label>
+        } else {
+            <h3>@projectLoaded.Name</h3>
+            <hr />
+            <TabControl>
+                <TabPage Text="Edit project">
+                    <div class="card">
+                        <h3>Create project</h3>
+                        <div class="form-group field">
+                            <label>Project name:</label>
+                            <input type="text" @bind="projectUpdateDTO.Name" @bind:event="oninput" />
+                            <EditForm Context="dtoContext" Model="@projectUpdateDTO">
+                                <label>Deadline (optional):</label>
+                                <InputDate @bind-Value="@projectUpdateDTO.deadline"></InputDate>
+                            </EditForm>
+
+                            @if (!string.IsNullOrEmpty(resultMsg))
+                            {
+                                <label style="color: @color">@resultMsg</label>
+                            }
+                        </div>
+                        <div class="button-row">
+                            <button @onclick="Save" disabled="@(string.IsNullOrEmpty(projectUpdateDTO.Name))" class="acceptbtn">
+                                Save project
+                            </button>
+                        </div>
+                    </div>
+                </TabPage>
+                <TabPage Text="Edit requirements">
+                    @if (projectLoaded.Requirements.Count() == 0)
+                    {
+                        <p>This project does not have any requirements</p>
+                    }
+                    else
+                    {
+                        @foreach (Requirement requirement in projectLoaded.Requirements)
+                        {
+                            <p>@requirement.content</p>
+                        }
+                    }
+                    <p><input type="text" @bind="@newRequirement"/><button @onclick="AddRequirement" disabled="@(string.IsNullOrEmpty(newRequirement))">Add requirement</button></p>
+                </TabPage>
+            </TabControl>
+        }
+    </Authorized>
+</AuthorizeView>
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private Project projectLoaded { get; set; }
+    private ProjectUpdateDTO projectUpdateDTO { get; set; }
+
+    private string newRequirement { get; set; }
+
+    private string color { get; set; }
+    private string resultMsg { get; set; }
+
+    protected override async Task OnInitializedAsync() {
+        projectLoaded = await projectService.GetByIdAsync(Id);
+
+        projectUpdateDTO = new ProjectUpdateDTO(projectLoaded.Id)
+            {
+                Name = projectLoaded.Name,
+                deadline = projectLoaded.Deadline,
+                requirements = projectLoaded.Requirements
+            };
+    }
+
+    private async Task Save() {
+        try
+        {
+            await projectService.UpdateAsync(projectUpdateDTO);
+            navMgr.NavigateTo($"/project/{Id}");
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            resultMsg = e.Message;
+        }
+    }
+
+    private async Task AddRequirement() {
+        projectUpdateDTO.requirements.Add(new Requirement(1, Id, newRequirement));
+        newRequirement = "";
+    }
+}

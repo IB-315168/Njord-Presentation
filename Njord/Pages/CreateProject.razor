@@ -19,7 +19,7 @@
                 <EditForm Context="dtoContext" Model="@dto">
                     <InputSelect @bind-Value="@dto.TeamId">
 
-                        @foreach(TeamBasicDTO teamBasicDTO in userTeams) {
+                        @foreach(TeamBasicDTO teamBasicDTO in memberTeams) {
                             <option value=@teamBasicDTO.Id>@teamBasicDTO.Name</option>
                         }
                     </InputSelect>
@@ -47,7 +47,7 @@
     private DateTime? deadline { get; set; }
     private ProjectCreateDTO dto = new ProjectCreateDTO();
 
-    private List<TeamBasicDTO> userTeams = new List<TeamBasicDTO>();
+    private List<TeamBasicDTO> memberTeams = new List<TeamBasicDTO>();
 
     private string color { get; set; }
     private string resultMsg { get; set; }
@@ -66,7 +66,7 @@
 
             foreach(TeamBasicDTO team in allTeams) {
                 if(team.TeamLeaderName.Equals(teamLeaderName)) {
-                    userTeams.Add(team);
+                    memberTeams.Add(team);
                 }
             }
 

@@ -7,7 +7,7 @@ public class ProjectUpdateDTO
         public int Id { get; }
         public String Name { get; set; }
         public DateTime deadline { get; set; }
-        private ICollection<Requirement> requirements { get; set; }
+        public ICollection<Requirement> requirements { get; set; }
 
         public ProjectUpdateDTO(int id)
         {

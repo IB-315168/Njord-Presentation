@@ -4,7 +4,7 @@
 @using HttpClients.ClientInterfaces
 @using Microsoft.AspNetCore.Components
 @using UIComponents
-@inject IMemberService userService
+@inject IMemberService memberService
 @inject IAuthService authService
 @inject NavigationManager navMgr
 
@@ -50,7 +50,7 @@
     {
         msg = "";
 
-        MemberBasicDTO userData = await userService.GetByIdAsync(Id);
+        MemberBasicDTO userData = await memberService.GetByIdAsync(Id);
 
         dto = new MemberUpdateDTO(Id)
             {
@@ -71,7 +71,7 @@
     {
         try
         {
-            await userService.UpdateAsync(dto);
+            await memberService.UpdateAsync(dto);
             await authService.LogoutAsync();
             navMgr.NavigateTo("/");
         }

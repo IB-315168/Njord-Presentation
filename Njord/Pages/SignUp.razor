@@ -1,7 +1,7 @@
 ﻿@page "/signup"
 @using Domain.DTOs
 @using HttpClients.ClientInterfaces
-@inject IMemberService userService
+@inject IMemberService memberService
 
 <div class="card">
     <h3>Sign Up</h3>
@@ -41,7 +41,7 @@
 
         try
         {
-            await userService.CreateAsync(new MemberCreateDTO() {
+            await memberService.CreateAsync(new MemberCreateDTO() {
                 FullName = fullName,
                 UserName = userName,
                 Email = email,
