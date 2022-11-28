@@ -1,4 +1,4 @@
-﻿namespace Domain.DTOs;
+﻿namespace Domain.DTOs.Project;
 
 public class BasicProjectDTO
 {
@@ -8,8 +8,8 @@ public class BasicProjectDTO
 
     public BasicProjectDTO(int id, string projectName, string teamName)
     {
-        this.Id = id;
-        this.ProjectName = projectName;
-        this.TeamName = teamName;
+        Id = id;
+        ProjectName = projectName;
+        TeamName = teamName;
     }
 }

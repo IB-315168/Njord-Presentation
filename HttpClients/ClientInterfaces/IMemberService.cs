@@ -1,4 +1,5 @@
 ﻿using Domain.DTOs;
+using Domain.DTOs.Member;
 using Domain.Models;
 using System;
 using System.Collections.Generic;
@@ -10,9 +11,9 @@ namespace HttpClients.ClientInterfaces
 {
     public interface IMemberService
     {
-        Task<Member> CreateAsync(MemberCreateDTO dto);
+        Task<MemberEntity> CreateAsync(MemberCreateDTO dto);
         Task<MemberBasicDTO> GetByIdAsync(int id);
-        Task<ICollection<Member>> GetAsync(
+        Task<ICollection<MemberEntity>> GetAsync(
             string? userName,
             string? email,
             string? fullName);

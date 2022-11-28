@@ -46,7 +46,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (Member member in members)
+                    @foreach (MemberEntity member in members)
                     {
                         <tr>
                             <td><a href="/profile/@member.Id">@member.UserName</a></td>
@@ -75,13 +75,13 @@
     [Parameter]
     public bool Edit { get; set; }
     [Parameter]
-    public Member teamLeader { get; set; }
+    public MemberEntity teamLeader { get; set; }
     [Parameter]
-    public ICollection<Member> members { get; set; }
+    public ICollection<MemberEntity> members { get; set; }
     [Parameter]
-    public ICollection<Member> teamMembers { get; set; }
+    public ICollection<MemberEntity> teamMembers { get; set; }
     [Parameter]
-    public EventCallback<Member> OnChange { get; set; }
+    public EventCallback<MemberEntity> OnChange { get; set; }
 
     private string userName = "";
     private string email = "";
@@ -91,7 +91,7 @@
     protected override async Task OnInitializedAsync()
     {
         if(teamMembers == null) {
-            teamMembers = new List<Member>();
+            teamMembers = new List<MemberEntity>();
         }
         await Search();
     }

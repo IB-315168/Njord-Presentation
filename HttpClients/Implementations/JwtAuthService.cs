@@ -1,4 +1,5 @@
 ﻿using Domain.DTOs;
+using Domain.DTOs.Member;
 using Domain.Models;
 using HttpClients.ClientInterfaces;
 using System;
@@ -89,7 +90,7 @@ namespace HttpClients.Implementations
         }
 
         // TODO: Implement on re-route of register
-        public Task RegisterAsync(Member user)
+        public Task RegisterAsync(MemberEntity user)
         {
             throw new NotImplementedException();
         }

@@ -1,5 +1,6 @@
 ﻿@page "/editTeam/{id:int}"
 @using Domain.DTOs
+@using Domain.DTOs.Team
 @using Domain.Models
 @using HttpClients.ClientInterfaces
 @using Microsoft.AspNetCore.Components
@@ -45,7 +46,7 @@ else {
     [Parameter]
     public int Id { get; set; }
 
-    private Team teamEdited = null!;
+    private TeamEntity teamEdited = null!;
     private string msg = "";
 
     private TeamUpdateDTO dto = null!;
@@ -71,7 +72,7 @@ else {
         }
     }
 
-    private void ChangeToTeam(Member user) {
+    private void ChangeToTeam(MemberEntity user) {
         if(dto.members.Contains(user)) {
             dto.members.Remove(user);
             Console.WriteLine($"Removed - {user.FullName} - {dto.members.Count()}");

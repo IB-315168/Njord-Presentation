@@ -17,7 +17,7 @@
             <h3>Loading...</h3>
         } else {
             //TODO: pass actual team instead
-            @if (@context.User.Claims.First(c => c.Type.Equals("Id")).Value.Equals(projectLoaded.TeamId))
+            @if (@context.User.Claims.First(c => c.Type.Equals("Id")).Value.Equals(projectLoaded.Team.TeamLeader.Id))
             {
                 <div class="editProfile">
                     <button class="acceptbtn" @onclick="@(() => navMgr.NavigateTo($"/editProject/{Id}"))">Edit project</button>
@@ -41,7 +41,7 @@
                     @if(projectLoaded.Requirements.Count() == 0) {
                         <p>This project does not have any requirements</p>
                     } else {
-                        @foreach (Requirement requirement in projectLoaded.Requirements)
+                        @foreach (RequirementEntity requirement in projectLoaded.Requirements)
                         {
                             <p style="border: 1px solid; padding: 5px">@requirement.content</p>
                         }
@@ -93,7 +93,7 @@
     public int Id { get; set; }
     private string msg = "";
 
-    private Project projectLoaded { get; set; }
+    private ProjectEntity projectLoaded { get; set; }
 
     protected override async Task OnInitializedAsync()
     {

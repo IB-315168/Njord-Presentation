@@ -1,11 +1,11 @@
 ﻿using Domain.Models;
 
-namespace Domain.DTOs;
+namespace Domain.DTOs.Team;
 
 public class TeamCreateDTO
 {
-    
-    public string Name { get;  }
+
+    public string Name { get; }
     public int TeamLeaderId { get; }
 
     public TeamCreateDTO(string name, int teamLeaderId)

@@ -1,11 +1,11 @@
-﻿namespace Domain.DTOs;
+﻿namespace Domain.DTOs.Project;
 
 public class RequirementCreateDTO
 {
     public int idproject { get; }
-    public String content { get;  }
+    public string content { get; }
 
-    public RequirementCreateDTO(int idproject, String content)
+    public RequirementCreateDTO(int idproject, string content)
     {
         this.idproject = idproject;
         this.content = content;

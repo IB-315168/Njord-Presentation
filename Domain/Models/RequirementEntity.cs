@@ -1,19 +1,19 @@
 ﻿namespace Domain.Models;
 
-public class Requirement : IEquatable<Requirement>
+public class RequirementEntity : IEquatable<RequirementEntity>
 {
     public int Id { get; set; }
     public int IdProject { get; set; }
     public string content { get; set; }
 
-    public Requirement(int id, int idProject, string content)
+    public RequirementEntity(int id, int idProject, string content)
     {
         Id = id;
         IdProject = idProject;
         this.content = content;
     }
 
-    public bool Equals(Requirement? other)
+    public bool Equals(RequirementEntity? other)
     {
         if(other == null)
         {

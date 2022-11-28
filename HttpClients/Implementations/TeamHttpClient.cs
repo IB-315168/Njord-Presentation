@@ -1,4 +1,5 @@
 ﻿using Domain.DTOs;
+using Domain.DTOs.Team;
 using Domain.Models;
 using HttpClients.ClientInterfaces;
 using System;
@@ -20,7 +21,7 @@ namespace HttpClients.Implementations
             this.client = client;
         }
 
-        public async Task<Team> CreateAsync(TeamCreateDTO dto)
+        public async Task<TeamEntity> CreateAsync(TeamCreateDTO dto)
         {
             HttpResponseMessage response = await client.PostAsJsonAsync("/api/teams", dto);
             string result = await response.Content.ReadAsStringAsync();
@@ -30,7 +31,7 @@ namespace HttpClients.Implementations
                 throw new Exception(result);
             }
 
-            Team team = JsonSerializer.Deserialize<Team>(result, new JsonSerializerOptions
+            TeamEntity team = JsonSerializer.Deserialize<TeamEntity>(result, new JsonSerializerOptions
             {
                 PropertyNameCaseInsensitive = true
             })!;
@@ -38,7 +39,7 @@ namespace HttpClients.Implementations
             return team;
         }
 
-        public async Task<Team> GetByIdAsync(int id)
+        public async Task<TeamEntity> GetByIdAsync(int id)
         {
             HttpResponseMessage response = await client.GetAsync($"/api/teams/{id}");
             string result = await response.Content.ReadAsStringAsync();
@@ -48,7 +49,7 @@ namespace HttpClients.Implementations
                 throw new Exception(result);
             }
 
-            Team team = JsonSerializer.Deserialize<Team>(result, new JsonSerializerOptions
+            TeamEntity team = JsonSerializer.Deserialize<TeamEntity>(result, new JsonSerializerOptions
             {
                 PropertyNameCaseInsensitive = true
             })!;

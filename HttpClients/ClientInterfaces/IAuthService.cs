@@ -1,4 +1,5 @@
 ﻿using Domain.DTOs;
+using Domain.DTOs.Member;
 using Domain.Models;
 using System;
 using System.Collections.Generic;
@@ -13,7 +14,7 @@ namespace HttpClients.ClientInterfaces
     {
         public Task LoginAsync(MemberLoginDTO dto);
         public Task LogoutAsync();
-        public Task RegisterAsync(Member user);
+        public Task RegisterAsync(MemberEntity user);
         public Task<ClaimsPrincipal> GetAuthAsync();
 
         public Action<ClaimsPrincipal> OnAuthStateChanged { get; set; }

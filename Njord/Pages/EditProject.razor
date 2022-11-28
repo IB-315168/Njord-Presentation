@@ -1,4 +1,5 @@
 ﻿@page "/EditProject/{id:int}"
+@using Domain.DTOs.Project
 @using UIComponents
 @using Domain.DTOs
 @using Domain.Models
@@ -49,7 +50,7 @@
                     }
                     else
                     {
-                        @foreach (Requirement requirement in projectLoaded.Requirements)
+                        @foreach (RequirementEntity requirement in projectLoaded.Requirements)
                         {
                             <RequirementField requirement="requirement"></RequirementField>
                         }
@@ -67,7 +68,7 @@
     [Parameter]
     public int Id { get; set; }
 
-    private Project projectLoaded { get; set; }
+    private ProjectEntity projectLoaded { get; set; }
     private ProjectUpdateDTO projectUpdateDTO { get; set; }
 
     private string newRequirement { get; set; }
@@ -100,7 +101,7 @@
     }
 
     private async Task AddRequirement() {
-        projectUpdateDTO.requirements.Add(new Requirement(1, Id, newRequirement));
+        projectUpdateDTO.requirements.Add(new RequirementEntity(1, Id, newRequirement));
         newRequirement = "";
     }
 }

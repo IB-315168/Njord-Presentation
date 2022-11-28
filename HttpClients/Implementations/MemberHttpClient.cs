@@ -1,4 +1,5 @@
 ﻿using Domain.DTOs;
+using Domain.DTOs.Member;
 using Domain.Models;
 using HttpClients.ClientInterfaces;
 using System;
@@ -20,7 +21,7 @@ namespace HttpClients.Implementations
             this.client = client;
         }
 
-        public async Task<Member> CreateAsync(MemberCreateDTO dto)
+        public async Task<MemberEntity> CreateAsync(MemberCreateDTO dto)
         {
             HttpResponseMessage response = await client.PostAsJsonAsync("/api/members", dto);
             string result = await response.Content.ReadAsStringAsync();
@@ -30,7 +31,7 @@ namespace HttpClients.Implementations
                 throw new Exception(result);
             }
 
-            Member user = JsonSerializer.Deserialize<Member>(result, new JsonSerializerOptions
+            MemberEntity user = JsonSerializer.Deserialize<MemberEntity>(result, new JsonSerializerOptions
             {
                 PropertyNameCaseInsensitive = true
             })!;
@@ -57,7 +58,7 @@ namespace HttpClients.Implementations
             return profile;
         }
 
-        public async Task<ICollection<Member>> GetAsync(string? userName, string? email, string? fullName)
+        public async Task<ICollection<MemberEntity>> GetAsync(string? userName, string? email, string? fullName)
         {
             string query = ConstructQuery(userName, email, fullName);
 
@@ -69,7 +70,7 @@ namespace HttpClients.Implementations
                 throw new Exception(content);
             }
 
-            ICollection<Member> users = JsonSerializer.Deserialize<ICollection<Member>>(content, new JsonSerializerOptions
+            ICollection<MemberEntity> users = JsonSerializer.Deserialize<ICollection<MemberEntity>>(content, new JsonSerializerOptions
             {
                 PropertyNameCaseInsensitive = true
             })!;

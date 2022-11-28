@@ -1,4 +1,5 @@
 ﻿using Domain.DTOs;
+using Domain.DTOs.Team;
 using Domain.Models;
 using System;
 using System.Collections.Generic;
@@ -10,8 +11,8 @@ namespace HttpClients.ClientInterfaces
 {
     public interface ITeamService
     {
-        Task<Team> CreateAsync(TeamCreateDTO dto);
-        Task<Team> GetByIdAsync(int id);
+        Task<TeamEntity> CreateAsync(TeamCreateDTO dto);
+        Task<TeamEntity> GetByIdAsync(int id);
         Task<IEnumerable<TeamBasicDTO>> GetByUserIdAsync(int id);
         Task UpdateAsync(TeamUpdateDTO dto);
         Task DeleteAsync(int id);

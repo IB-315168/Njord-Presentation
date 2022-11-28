@@ -1,4 +1,5 @@
 ﻿using Domain.DTOs;
+using Domain.DTOs.Project;
 using Domain.Models;
 using HttpClients.ClientInterfaces;
 using System;
@@ -20,7 +21,7 @@ namespace HttpClients.Implementations
             client = httpClient;
         }
 
-        public async Task<Project> CreateAsync(ProjectCreateDTO dto)
+        public async Task<ProjectEntity> CreateAsync(ProjectCreateDTO dto)
         {
             HttpResponseMessage response = await client.PostAsJsonAsync("/api/projects", dto);
             string result = await response.Content.ReadAsStringAsync();
@@ -30,7 +31,7 @@ namespace HttpClients.Implementations
                 throw new Exception(result);
             }
 
-            Project project = JsonSerializer.Deserialize<Project>(result, new JsonSerializerOptions
+            ProjectEntity project = JsonSerializer.Deserialize<ProjectEntity>(result, new JsonSerializerOptions
             {
                 PropertyNameCaseInsensitive = true
             })!;
@@ -49,7 +50,7 @@ namespace HttpClients.Implementations
             }
         }
 
-        public async Task<Project> GetByIdAsync(int id)
+        public async Task<ProjectEntity> GetByIdAsync(int id)
         {
             HttpResponseMessage response = await client.GetAsync($"/api/projects/{id}");
             string result = await response.Content.ReadAsStringAsync();
@@ -59,7 +60,7 @@ namespace HttpClients.Implementations
                 throw new Exception(result);
             }
 
-            Project project = JsonSerializer.Deserialize<Project>(result, new JsonSerializerOptions
+            ProjectEntity project = JsonSerializer.Deserialize<ProjectEntity>(result, new JsonSerializerOptions
             {
                 PropertyNameCaseInsensitive = true
             })!;

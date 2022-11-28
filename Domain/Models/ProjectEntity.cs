@@ -6,32 +6,32 @@ using System.Threading.Tasks;
 
 namespace Domain.Models
 {
-    public class Project : IEquatable<Project>
+    public class ProjectEntity : IEquatable<ProjectEntity>
     {
         public int Id { get; set; }
         public string Name { get; set; }
-        public int TeamId { get; set; }
+        public TeamEntity Team { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime Deadline { get; set; }
-        public ICollection<Requirement> Requirements { get; set; }
+        public ICollection<RequirementEntity> Requirements { get; set; }
 
 
-        public Project(int id, string name, int teamId, DateTime startDate)
+        public ProjectEntity(int id, string name, TeamEntity teamId, DateTime startDate)
         {
             Id = id;
             Name = name;
-            TeamId = teamId;
+            Team = teamId;
             StartDate = startDate;
         }
 
-        public bool Equals(Project? other)
+        public bool Equals(ProjectEntity? other)
         {
             if(other == null)
             {
                 return false;
             }
 
-            return Id == other.Id && Name == other.Name && TeamId == other.TeamId;
+            return Id == other.Id && Name == other.Name && Team == other.Team;
         }
     }
 }

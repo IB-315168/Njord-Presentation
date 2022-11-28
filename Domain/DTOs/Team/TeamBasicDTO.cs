@@ -1,6 +1,6 @@
 ﻿using Domain.Models;
 
-namespace Domain.DTOs;
+namespace Domain.DTOs.Team;
 
 public class TeamBasicDTO
 {
