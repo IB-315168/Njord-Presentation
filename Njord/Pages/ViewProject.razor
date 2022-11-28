@@ -1,5 +1,6 @@
 ﻿@page "/project/{id:int}"
 @using Domain.DTOs
+@using Domain.DTOs.Meeting
 @using Domain.Models
 @using HttpClients.ClientInterfaces
 @using Microsoft.AspNetCore.Components
@@ -7,7 +8,9 @@
 @using Radzen
 @using Radzen.Blazor
 @inject IProjectService projectService
+@inject IMeetingService meetingService
 @inject NavigationManager navMgr
+
 <AuthorizeView>
     <NotAuthorized>
         <label>You must be logged in to perform that action</label>
@@ -17,7 +20,7 @@
             <h3>Loading...</h3>
         } else {
             //TODO: pass actual team instead
-            @if (@context.User.Claims.First(c => c.Type.Equals("Id")).Value.Equals(projectLoaded.Team.TeamLeader.Id))
+            @if (@context.User.Claims.First(c => c.Type.Equals("Id")).Value.Equals(projectLoaded.Team.TeamLeader.Id.ToString()))
             {
                 <div class="editProfile">
                     <button class="acceptbtn" @onclick="@(() => navMgr.NavigateTo($"/editProject/{Id}"))">Edit project</button>
@@ -28,7 +31,8 @@
             <hr />
             <TabControl>
                 <TabPage Text="Calendar">
-                    <RadzenScheduler style="height: 768px;" Data="@data" TItem="DataItem" StartProperty="Start" EndProperty="End" TextProperty="Text" SelectedIndex="2">
+                    <button class="acceptbtn" @onclick="@(() => showCreateMeetingPopup = !showCreateMeetingPopup)">Create meeting</button>
+                    <RadzenScheduler style="height: 768px;" Data="@meetings" TItem="BasicMeetingDTO" StartProperty="StartDate" EndProperty="EndDate" TextProperty="Title" SelectedIndex="2">
                         <RadzenDayView />
                         <RadzenWeekView />
                         <RadzenMonthView />
@@ -49,50 +53,32 @@
                 </TabPage>
             </TabControl>
         }
+
+        <Popup ShowPopup="showCreateMeetingPopup">
+            <div class="form-group field">
+                <label>Title:</label>
+                <input type="text" @bind="@createMeetingDTO.Title" />
+                <label>Description:</label>
+                <input type="text" @bind="@createMeetingDTO.Description" />
+                <label>Start date:</label>
+                <RadzenDatePicker @bind-Value=@createMeetingDTO.StartDate TValue="DateTime" ShowTime=true HoursStep="1" MinutesStep="5" />
+                <label>End date:</label>
+                <RadzenDatePicker @bind-Value=@createMeetingDTO.EndDate TValue="DateTime" ShowTime=true HoursStep="1" MinutesStep="5" />
+                <button class="acceptbtn" @onclick="CreateMeeting">Create meeting</button>
+            </div>
+        </Popup>
     </Authorized>
 </AuthorizeView>
 
 @code {
-    //Radzen Scheduler
-
-    class DataItem
-    {
-        public DateTime Start { get; set; }
-        public DateTime End { get; set; }
-        public string Text { get; set; }
-    }
-
-    DataItem[] data = new DataItem[]
-    {
-      new DataItem
-      {
-        Start = DateTime.Today,
-        End = DateTime.Today.AddDays(1),
-        Text = "Blazor test"
-      },
-      new DataItem
-      {
-          Start = new DateTime(2022, 12, 24),
-          End = new DateTime(2022, 12, 24).AddDays(1),
-          Text = "Christmas"
-      },
-      new DataItem
-      {
-          Start = new DateTime(2022, 11, 25, 11, 50, 0),
-          End = new DateTime(2022, 11, 25, 12, 45, 0),
-          Text = "Meeting - JOOK"
-      },
-    };
-
-    //Radzen Scheduler
-
-
-
-
     [Parameter]
     public int Id { get; set; }
     private string msg = "";
 
+    private bool showCreateMeetingPopup = false;
+    private MeetingCreateDTO createMeetingDTO = new MeetingCreateDTO();
+
+    private ICollection<BasicMeetingDTO> meetings { get; set; }
     private ProjectEntity projectLoaded { get; set; }
 
     protected override async Task OnInitializedAsync()
@@ -101,6 +87,27 @@
         try
         {
             projectLoaded = await projectService.GetByIdAsync(Id);
+            meetings = await meetingService.GetByProjectIdAsync(Id);
+
+            createMeetingDTO.AssignedLeader = projectLoaded.Team.TeamLeader.Id;
+            createMeetingDTO.StartDate = DateTime.Now;
+            createMeetingDTO.EndDate = DateTime.Now.AddHours(1);
+            createMeetingDTO.ProjectAssigned = Id;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            msg = e.Message;
+        }
+    }
+
+    private async Task CreateMeeting() {
+        await meetingService.CreateAsync(createMeetingDTO);
+
+        showCreateMeetingPopup = false;
+
+        try {
+            meetings = await meetingService.GetByProjectIdAsync(Id);
         }
         catch (Exception e)
         {

@@ -16,6 +16,8 @@ namespace Domain.Models
         public ICollection<RequirementEntity> Requirements { get; set; }
 
 
+        public ProjectEntity() { }
+
         public ProjectEntity(int id, string name, TeamEntity teamId, DateTime startDate)
         {
             Id = id;
