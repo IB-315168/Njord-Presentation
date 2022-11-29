@@ -20,6 +20,7 @@ builder.Services.AddScoped<IMemberService, MemberHttpClient>();
 builder.Services.AddScoped<ITeamService, TeamHttpClient>();
 builder.Services.AddScoped<IAuthService, JwtAuthService>();
 builder.Services.AddScoped<IProjectService, ProjectHttpClient>();
+builder.Services.AddScoped<ITaskService, TaskHttpClient>();
 builder.Services.AddScoped<IMeetingService, MeetingHttpClient>();
 builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthProvider>();
 
