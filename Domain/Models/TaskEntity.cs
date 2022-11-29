@@ -6,11 +6,11 @@ public class TaskEntity : IEquatable<TaskEntity>
     public MemberEntity memberAssigned { get; set; }
     public string Title { get; set; }
     public string Description { get; set; }
-    public char Status { get; set; }
+    public string Status { get; set; }
     public DateTime TimeEstimation { get; set; }
     public DateTime CreationDate { get; set; }
 
-    public TaskEntity(int id, string title, string description, char status, DateTime creationDate)
+    public TaskEntity(int id, string title, string description, string status, DateTime creationDate)
     {
         Id = id;
         Title = title;

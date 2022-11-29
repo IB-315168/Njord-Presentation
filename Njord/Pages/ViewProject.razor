@@ -1,6 +1,7 @@
 ﻿@page "/project/{id:int}"
 @using Domain.DTOs
 @using Domain.DTOs.Meeting
+@using Domain.DTOs.Task
 @using Domain.Models
 @using HttpClients.ClientInterfaces
 @using Microsoft.AspNetCore.Components
@@ -9,6 +10,7 @@
 @using Radzen.Blazor
 @inject IProjectService projectService
 @inject IMeetingService meetingService
+@inject ITaskService taskService
 @inject NavigationManager navMgr
 
 <AuthorizeView>
@@ -42,7 +44,61 @@
                     </RadzenScheduler>
                 </TabPage>
                 <TabPage Text="Board">
-                    <p>Board placeholder</p>
+                    <button class="acceptbtn" @onclick="@(() => taskPopup.CreatePopup.Show())">Create task</button>
+                    @if(tasks.Count() == 0) {
+                        <p>There are no tasks yet for this project.</p>
+                    }
+                    else {
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-4">
+                                    <h4>Todo:</h4>
+                                    @foreach (TaskEntity task in tasks.Where(task => task.Status.Equals("Todo")))
+                                        {
+                                        <div class="task todo" @onclick="(() => OnTaskSelect(task))">
+                                                <p id="title">@task.Title</p>
+                                                @if(task.memberAssigned != null) {
+                                                    <p id="assigned">Assigned to: @task.memberAssigned.FullName</p>
+                                                } else {
+                                                    <p id="assigned">Not assigned yet</p>
+                                                }
+                                                <p id="timeest">Time estimated: @task.TimeEstimation.TimeOfDay</p>
+                                            </div>
+                                        }
+                                </div>
+                                <div class="col-4">
+                                    <h4>In progress:</h4>
+                                    @foreach (TaskEntity task in tasks.Where(task => task.Status.Equals("In progress")))
+                                    {
+                                        <div class="task inprogress"@onclick="(() => OnTaskSelect(task))">
+                                            <p id="title">@task.Title</p>
+                                            @if(task.memberAssigned != null) {
+                                                    <p id="assigned">Assigned to: @task.memberAssigned.FullName</p>
+                                            } else {
+                                                <p id="assigned">Not assigned yet</p>
+                                            }
+                                            <p id="timeest">Time estimated: @task.TimeEstimation.TimeOfDay</p>
+                                        </div>
+                                    }
+                                </div>
+                                <div class="col-4">
+                                    <h4>Completed:</h4>
+                                    @foreach (TaskEntity task in tasks.Where(task => task.Status.Equals("Completed")))
+                                    {
+                                        <div class="task completed" @onclick="(() => OnTaskSelect(task))">
+                                            <p id="title">@task.Title</p>
+                                            @if(task.memberAssigned != null) {
+                                                    <p id="assigned">Assigned to: @task.memberAssigned.FullName</p>
+                                            } else {
+                                                <p id="assigned">Not assigned yet</p>
+                                            }
+                                            <p id="timeest">Time estimated: @task.TimeEstimation.TimeOfDay</p>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    }
                 </TabPage>
                 <TabPage Text="Requirements">
                     @if(projectLoaded.Requirements.Count() == 0) {
@@ -57,7 +113,9 @@
             </TabControl>
         }
 
-        <MeetingPopup @ref="meetingPopup" ProjectLoaded="projectLoaded" CreateMeetingDTO="createMeetingDTO" meetingUpdateDTO="meetingUpdateDTO" SelectedMeeting="selectedMeeting" UpdateView="UpdateCalendar"></MeetingPopup>
+        <MeetingPopup @ref="meetingPopup" ProjectLoaded="projectLoaded" CreateMeetingDTO="createMeetingDTO" SelectedMeeting="selectedMeeting" UpdateView="UpdateCalendar"></MeetingPopup>
+
+        <TaskPopup @ref="taskPopup" CreateTaskDTO="createTaskDTO" SelectedTask="selectedTask" UpdateView="UpdateBoard"></TaskPopup>
 
     </Authorized>
 </AuthorizeView>
@@ -67,17 +125,17 @@
     public int Id { get; set; }
     private string msg = "";
 
-    private MeetingUpdateDTO meetingUpdateDTO { get; set; }
     private MeetingCreateDTO createMeetingDTO = new MeetingCreateDTO();
     private MeetingEntity selectedMeeting { get; set; }
 
-    private Popup createPopup;
-    private Popup editPopup;
-    private Popup detailsPopup;
+    private TaskCreateDTO createTaskDTO = new TaskCreateDTO();
+    private TaskEntity selectedTask { get; set; }
 
+    private TaskPopup taskPopup;
     private MeetingPopup meetingPopup;
 
     private ICollection<MeetingEntity> meetings { get; set; }
+    private ICollection<TaskEntity> tasks { get; set; }
     private ProjectEntity projectLoaded { get; set; }
 
     protected override async Task OnInitializedAsync()
@@ -87,11 +145,14 @@
         {
             projectLoaded = await projectService.GetByIdAsync(Id);
             meetings = await meetingService.GetByProjectIdAsync(Id);
+            tasks = await taskService.GetByProjectIdAsync(Id);
 
             createMeetingDTO.AssignedLeader = projectLoaded.Team.TeamLeader.Id;
             createMeetingDTO.StartDate = DateTime.Now;
             createMeetingDTO.EndDate = DateTime.Now.AddHours(1);
             createMeetingDTO.ProjectAssigned = Id;
+
+            createTaskDTO.projectAssigned = Id;
         }
         catch (Exception e)
         {
@@ -100,52 +161,11 @@
         }
     }
 
-    private async Task CreateMeeting() {
-        try {
-            await meetingService.CreateAsync(createMeetingDTO);
 
-            createPopup.Close();
+    private void OnTaskSelect(TaskEntity task) {
+        selectedTask = task;
 
-            meetings = await meetingService.GetByProjectIdAsync(Id);
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-            msg = e.Message;
-        }
-    }
-
-    private async Task UpdateMeeting()
-    {
-        try
-        {
-            await meetingService.UpdateAsync(meetingUpdateDTO);
-
-            editPopup.Close();
-
-            meetings = await meetingService.GetByProjectIdAsync(Id);
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-            msg = e.Message;
-        }
-    }
-
-    private async Task DeleteMeeting() {
-        try {
-            await meetingService.DeleteAsync(selectedMeeting.Id);
-
-            selectedMeeting = null;
-            detailsPopup.Close();
-
-            meetings = await meetingService.GetByProjectIdAsync(Id);
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-            msg = e.Message;
-        }
+        taskPopup.DetailsPopup.Show();
     }
 
     private void OnMeetingSelect(SchedulerAppointmentSelectEventArgs<MeetingEntity> args)
@@ -155,22 +175,23 @@
         meetingPopup.DetailsPopup.Show();
     }
 
-    private void OnEdit()
-    {
-        meetingUpdateDTO = new MeetingUpdateDTO(selectedMeeting.Id);
-        meetingUpdateDTO.Title = selectedMeeting.Title;
-        meetingUpdateDTO.Description = selectedMeeting.Description;
-        meetingUpdateDTO.StartDate = selectedMeeting.StartDate;
-        meetingUpdateDTO.EndDate = selectedMeeting.EndDate;
-
-        meetingPopup.DetailsPopup.Close();
-        meetingPopup.EditPopup.Show();
-    }
 
     private async Task UpdateCalendar() {
         try
         {
             meetings = await meetingService.GetByProjectIdAsync(Id);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            msg = e.Message;
+        }
+    }
+
+    private async Task UpdateBoard() {
+        try
+        {
+            tasks = await taskService.GetByProjectIdAsync(Id);
         }
         catch (Exception e)
         {

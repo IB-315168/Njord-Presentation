@@ -9,5 +9,5 @@ public interface ITaskService
     Task UpdateAsync(TaskUpdateDTO dto);
     Task DeleteAsync(int id);
     Task<TaskEntity> GetByIdAsync(int id);
-    Task<IEnumerable<BasicTaskDTO>> GetByProjectIdAsync(int id);
+    Task<ICollection<TaskEntity>> GetByProjectIdAsync(int id);
 }

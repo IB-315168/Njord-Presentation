@@ -8,7 +8,7 @@ public class TaskUpdateDTO
     public MemberEntity? memberAssigned { get; set; }
     public string Title { get; set; }
     public string Description { get; set; }
-    public char Status { get; set; }
+    public string Status { get; set; }
     public DateTime TimeEstimation { get; set; }
 
     public TaskUpdateDTO(int id)

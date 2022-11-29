@@ -74,9 +74,9 @@ public class TaskHttpClient:ITaskService
         return task;
     }
 
-    public async Task<IEnumerable<BasicTaskDTO>> GetByProjectIdAsync(int id)
+    public async Task<ICollection<TaskEntity>> GetByProjectIdAsync(int id)
     {
-        HttpResponseMessage response = await client.GetAsync($"/api/tasks/?projectId={id}");
+        HttpResponseMessage response = await client.GetAsync($"/api/tasks/?id={id}");
         string result = await response.Content.ReadAsStringAsync();
 
         if (!response.IsSuccessStatusCode)
@@ -84,7 +84,7 @@ public class TaskHttpClient:ITaskService
             throw new Exception(result);
         }
 
-        IEnumerable<BasicTaskDTO> task = JsonSerializer.Deserialize<IEnumerable<BasicTaskDTO>>(result, new JsonSerializerOptions
+        ICollection<TaskEntity> task = JsonSerializer.Deserialize<ICollection<TaskEntity>>(result, new JsonSerializerOptions
         {
             PropertyNameCaseInsensitive = true
         })!;

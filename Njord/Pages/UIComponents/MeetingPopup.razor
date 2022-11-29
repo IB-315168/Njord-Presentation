@@ -64,9 +64,10 @@
     [Parameter]
     public MeetingEntity SelectedMeeting { get; set; }
     [Parameter]
-    public MeetingUpdateDTO meetingUpdateDTO { get; set; }
-    [Parameter]
     public EventCallback UpdateView { get; set; }
+
+
+    private MeetingUpdateDTO meetingUpdateDTO { get; set; }
 
     public Popup CreatePopup { get; set; }
     public Popup DetailsPopup { get; set; }

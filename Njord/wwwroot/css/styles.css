@@ -211,3 +211,28 @@ hr {
     background-color: #666;
     border: 0 none;
 }
+
+.task {
+    display: block;
+    overflow: hidden;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+    transition: 0.3s;
+    width: auto;
+    padding: 5px;
+    margin-top: 10px;
+    border-radius: 15px;
+}
+
+    .task.completed {
+        background-color: #F0FFF0;
+    }
+
+    .task #assigned {
+        font-size: 10px;
+        float:left;
+    }
+    .task #timeest {
+        margin-left: 1rem;
+        font-size: 10px;
+        float:right;
+    }

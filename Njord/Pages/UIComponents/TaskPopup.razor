@@ -1,0 +1,134 @@
+﻿@namespace UIComponents
+@using HttpClients.ClientInterfaces
+@using Radzen
+@using Radzen.Blazor
+@using Domain.DTOs.Task
+@using Domain.Models
+@inject ITaskService taskService
+
+<Popup @ref="CreatePopup">
+    <div class="form-group field">
+        <label>Title:</label>
+        <input type="text" @bind="@CreateTaskDTO.Title" /><br />
+        <label>Description:</label>
+        <input type="text" @bind="@CreateTaskDTO.Description" /><br />
+        <button class="acceptbtn" @onclick="CreateTask">Create task</button>
+    </div>
+</Popup>
+
+<Popup @ref="DetailsPopup">
+    <h3>@SelectedTask.Title</h3>
+    <p><b>Created on:</b> @SelectedTask.CreationDate</p>
+    <p><b>Description:</b> @SelectedTask.Description</p>
+    <p>
+        <b>Asignee:</b>
+        @if(SelectedTask.memberAssigned != null) {
+            @SelectedTask.memberAssigned.FullName/*", <"@SelectedTask.memberAssigned.UserName">"*/
+        }
+        else {
+            <p>Not assigned yet</p>
+        }
+    </p>
+    <p><b>Status:</b> @SelectedTask.Status</p>
+    <p><b>Time estimated:</b> @SelectedTask.TimeEstimation.TimeOfDay</p>
+    <button class="acceptbtn" @onclick="OnEdit">Edit</button>
+    <button class="deletebtn" @onclick="DeleteTask">Delete</button>
+</Popup>
+
+<Popup @ref="EditPopup">
+    <div class="form-group field">
+        <label>Title:</label>
+        <input type="text" @bind="@taskUpdateDTO.Title" /><br />
+        <label>Description:</label>
+        <input type="text" @bind="@taskUpdateDTO.Description" /><br />
+        <label>Status:</label>
+        <select @bind="taskUpdateDTO.Status">
+            <option value="Todo">Todo</option>
+            <option value="In progress">In progress</option>
+            <option value="Completed">Completed</option>
+        </select><br />
+        <label>Time estimation:</label>
+        <button class="acceptbtn" @onclick="UpdateTask">Save</button>
+    </div>
+</Popup>
+
+@code {
+    [Parameter]
+    public TaskEntity SelectedTask { get; set; }
+    [Parameter]
+    public TaskCreateDTO CreateTaskDTO { get; set; }
+    [Parameter]
+    public EventCallback UpdateView { get; set; }
+
+    private TaskUpdateDTO taskUpdateDTO { get; set; }
+
+    public Popup CreatePopup { get; set; }
+    public Popup DetailsPopup { get; set; }
+    public Popup EditPopup { get; set; }
+
+    private string msg = "";
+
+    private async Task CreateTask()
+    {
+        try
+        {
+            CreatePopup.Close();
+
+            await taskService.CreateAsync(CreateTaskDTO);
+
+            await UpdateView.InvokeAsync();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            msg = e.Message;
+        }
+    }
+
+    private async Task UpdateTask()
+    {
+        try
+        {
+            Console.WriteLine(taskUpdateDTO.Status);
+
+            EditPopup.Close();
+
+            await taskService.UpdateAsync(taskUpdateDTO);
+
+            await UpdateView.InvokeAsync();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            msg = e.Message;
+        }
+    }
+
+    private async Task DeleteTask() {
+        try
+        {
+            DetailsPopup.Close();
+            await taskService.DeleteAsync(SelectedTask.Id);
+
+            await UpdateView.InvokeAsync();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            msg = e.Message;
+        }
+    }
+
+    private void OnEdit()
+    {
+        taskUpdateDTO = new TaskUpdateDTO(SelectedTask.Id);
+        taskUpdateDTO.Title = SelectedTask.Title;
+        taskUpdateDTO.Description = SelectedTask.Description;
+        taskUpdateDTO.Status = SelectedTask.Status;
+        taskUpdateDTO.memberAssigned = SelectedTask.memberAssigned;
+        taskUpdateDTO.TimeEstimation = SelectedTask.TimeEstimation;
+
+        DetailsPopup.Close();
+        EditPopup.Show();
+    }
+}
