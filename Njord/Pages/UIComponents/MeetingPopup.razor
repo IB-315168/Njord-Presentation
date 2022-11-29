@@ -1,0 +1,140 @@
+﻿@namespace UIComponents
+@using Domain.Models
+@using HttpClients.ClientInterfaces
+@using Radzen
+@using Radzen.Blazor
+@using Domain.DTOs.Meeting
+
+@inject IMeetingService meetingService
+
+<AuthorizeView>
+    <NotAuthorized>
+        </NotAuthorized>
+        <Authorized>
+        
+            <Popup @ref="CreatePopup">
+                <div class="form-group field">
+                    <label>Title:</label>
+                    <input type="text" @bind="@CreateMeetingDTO.Title" /><br />
+                    <label>Description:</label>
+                    <input type="text" @bind="@CreateMeetingDTO.Description" /><br />
+                    <label>Start date:</label>
+                    <RadzenDatePicker @bind-Value=@CreateMeetingDTO.StartDate TValue="DateTime" ShowTime=true HoursStep="1" MinutesStep="5" /><br />
+                    <label>End date:</label>
+                    <RadzenDatePicker @bind-Value=@CreateMeetingDTO.EndDate TValue="DateTime" ShowTime=true HoursStep="1" MinutesStep="5" />
+                    <button class="acceptbtn" @onclick="CreateMeeting">Create meeting</button>
+                </div>
+            </Popup>
+
+            <Popup @ref="DetailsPopup">
+                <h3>@SelectedMeeting.Title</h3>
+                <p>Description: @SelectedMeeting.Description</p><br />
+                <p>From: @SelectedMeeting.StartDate</p>
+                <p>To: @SelectedMeeting.EndDate</p>
+                <p>
+                    @if (@context.User.Claims.First(c => c.Type.Equals("Id")).Value.Equals(ProjectLoaded.Team.TeamLeader.Id.ToString()))
+                    {
+                        <button class="acceptbtn" @onclick="OnEdit">Edit</button>
+                        <button class="deletebtn" @onclick="DeleteMeeting">Delete</button>
+                    }
+                </p>
+            </Popup>
+
+            <Popup @ref="EditPopup">
+                <div class="form-group field">
+                    <label>Title:</label>
+                    <input type="text" @bind="@meetingUpdateDTO.Title" /><br />
+                    <label>Description:</label>
+                    <input type="text" @bind="@meetingUpdateDTO.Description" /><br />
+                    <label>Start date:</label>
+                    <RadzenDatePicker @bind-Value=@meetingUpdateDTO.StartDate TValue="DateTime" ShowTime=true HoursStep="1" MinutesStep="5" /><br />
+                    <label>End date:</label>
+                    <RadzenDatePicker @bind-Value=@meetingUpdateDTO.EndDate TValue="DateTime" ShowTime=true HoursStep="1" MinutesStep="5" />
+                    <button class="acceptbtn" @onclick="UpdateMeeting">Save</button>
+                </div>
+            </Popup>
+    </Authorized>
+</AuthorizeView>
+
+@code {
+    [Parameter]
+    public ProjectEntity ProjectLoaded { get; set; }
+    [Parameter]
+    public MeetingCreateDTO CreateMeetingDTO { get; set; }
+    [Parameter]
+    public MeetingEntity SelectedMeeting { get; set; }
+    [Parameter]
+    public MeetingUpdateDTO meetingUpdateDTO { get; set; }
+    [Parameter]
+    public EventCallback UpdateView { get; set; }
+
+    public Popup CreatePopup { get; set; }
+    public Popup DetailsPopup { get; set; }
+    public Popup EditPopup { get; set; }
+
+    private string msg = "";
+
+    private async Task CreateMeeting()
+    {
+        try
+        {
+            CreatePopup.Close();
+
+            await meetingService.CreateAsync(CreateMeetingDTO);
+
+            await UpdateView.InvokeAsync();            
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            msg = e.Message;
+        }
+    }
+
+    private async Task UpdateMeeting()
+    {
+        try
+        {
+            EditPopup.Close();
+
+            await meetingService.UpdateAsync(meetingUpdateDTO);
+
+            await UpdateView.InvokeAsync();
+
+            
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            msg = e.Message;
+        }
+    }
+
+    private async Task DeleteMeeting()
+    {
+        try
+        {
+            DetailsPopup.Close();
+            await meetingService.DeleteAsync(SelectedMeeting.Id);
+                        
+            await UpdateView.InvokeAsync();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            msg = e.Message;
+        }
+    }
+
+    private void OnEdit()
+    {
+        meetingUpdateDTO = new MeetingUpdateDTO(SelectedMeeting.Id);
+        meetingUpdateDTO.Title = SelectedMeeting.Title;
+        meetingUpdateDTO.Description = SelectedMeeting.Description;
+        meetingUpdateDTO.StartDate = SelectedMeeting.StartDate;
+        meetingUpdateDTO.EndDate = SelectedMeeting.EndDate;
+
+        DetailsPopup.Close();
+        EditPopup.Show();
+    }
+}

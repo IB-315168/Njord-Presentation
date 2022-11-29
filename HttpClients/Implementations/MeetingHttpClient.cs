@@ -69,7 +69,7 @@ namespace HttpClients.Implementations
             return meeting;
         }
 
-        public async Task<ICollection<BasicMeetingDTO>> GetByProjectIdAsync(int id)
+        public async Task<ICollection<MeetingEntity>> GetByProjectIdAsync(int id)
         {
             HttpResponseMessage response = await client.GetAsync("/api/meetings?id=" + id);
             string content = await response.Content.ReadAsStringAsync();
@@ -79,7 +79,7 @@ namespace HttpClients.Implementations
                 throw new Exception(content);
             }
 
-            ICollection<BasicMeetingDTO> meetings = JsonSerializer.Deserialize<ICollection<BasicMeetingDTO>>(content, new JsonSerializerOptions
+            ICollection<MeetingEntity> meetings = JsonSerializer.Deserialize<ICollection<MeetingEntity>>(content, new JsonSerializerOptions
             {
                 PropertyNameCaseInsensitive = true
             })!;
