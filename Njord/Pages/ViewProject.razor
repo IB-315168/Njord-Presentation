@@ -106,7 +106,9 @@
                     } else {
                         @foreach (RequirementEntity requirement in projectLoaded.Requirements)
                         {
-                            <p style="border: 1px solid; padding: 5px">@requirement.content</p>
+                            <div class="card">
+                                <p style="border: 1px solid; padding: 5px">@requirement.content</p>
+                            </div>
                         }
                     }                    
                 </TabPage>
@@ -115,7 +117,7 @@
 
         <MeetingPopup @ref="meetingPopup" ProjectLoaded="projectLoaded" CreateMeetingDTO="createMeetingDTO" SelectedMeeting="selectedMeeting" UpdateView="UpdateCalendar"></MeetingPopup>
 
-        <TaskPopup @ref="taskPopup" CreateTaskDTO="createTaskDTO" SelectedTask="selectedTask" UpdateView="UpdateBoard"></TaskPopup>
+        <TaskPopup @ref="taskPopup" ProjectLoaded="projectLoaded" CreateTaskDTO="createTaskDTO" SelectedTask="selectedTask" UpdateView="UpdateBoard"></TaskPopup>
 
     </Authorized>
 </AuthorizeView>

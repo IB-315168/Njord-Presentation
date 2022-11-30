@@ -7,7 +7,8 @@
 @inject ITaskService taskService
 
 <Popup @ref="CreatePopup">
-    <div class="form-group field">
+    <h3>Create task</h3>
+    <div class="card">
         <label>Title:</label>
         <input type="text" @bind="@CreateTaskDTO.Title" /><br />
         <label>Description:</label>
@@ -21,7 +22,7 @@
     <p><b>Created on:</b> @SelectedTask.CreationDate</p>
     <p><b>Description:</b> @SelectedTask.Description</p>
     <p>
-        <b>Asignee:</b>
+        <b>Asignee: </b>
         @if(SelectedTask.memberAssigned != null) {
             @SelectedTask.memberAssigned.FullName/*", <"@SelectedTask.memberAssigned.UserName">"*/
         }
@@ -36,7 +37,8 @@
 </Popup>
 
 <Popup @ref="EditPopup">
-    <div class="form-group field">
+    <h3>Edit task</h3>
+    <div class="card">
         <label>Title:</label>
         <input type="text" @bind="@taskUpdateDTO.Title" /><br />
         <label>Description:</label>
@@ -47,12 +49,27 @@
             <option value="In progress">In progress</option>
             <option value="Completed">Completed</option>
         </select><br />
+        <label>Asignee:</label>
+        <select @bind="@AsigneeId">
+                <option value=0>Noone</option>
+                <option value=@ProjectLoaded.Team.TeamLeader.Id>@ProjectLoaded.Team.TeamLeader.UserName</option>
+                @foreach (MemberEntity member in ProjectLoaded.Team.members)
+                {
+                    <option value=@member.Id>@member.UserName</option>
+                }
+        </select><br />
         <label>Time estimation:</label>
+        <p><input style="width: 100px" type="number" min="0" max="23" @bind="TimeEstHour" />:
+            <input style="width: 100px" type="number" min="0" max="59" @bind="TimeEstMinute" />:
+            <input style="width: 100px" type="number" min="0" max="59" @bind="TimeEstSecond" />
+        </p>
         <button class="acceptbtn" @onclick="UpdateTask">Save</button>
     </div>
 </Popup>
 
 @code {
+    [Parameter]
+    public ProjectEntity ProjectLoaded { get; set; }
     [Parameter]
     public TaskEntity SelectedTask { get; set; }
     [Parameter]
@@ -65,6 +82,11 @@
     public Popup CreatePopup { get; set; }
     public Popup DetailsPopup { get; set; }
     public Popup EditPopup { get; set; }
+
+    private int TimeEstHour { get; set; }
+    private int TimeEstMinute { get; set; }
+    private int TimeEstSecond { get; set; }
+    private int AsigneeId = 0;
 
     private string msg = "";
 
@@ -89,11 +111,24 @@
     {
         try
         {
-            Console.WriteLine(taskUpdateDTO.Status);
+            taskUpdateDTO.TimeEstimation = new DateTime(1970, 1, 1, TimeEstHour, TimeEstMinute, TimeEstSecond);
+
+            if(AsigneeId == 0) {
+                taskUpdateDTO.memberAssigned = null;
+            } else if (AsigneeId == ProjectLoaded.Team.TeamLeader.Id) {
+                taskUpdateDTO.memberAssigned = ProjectLoaded.Team.TeamLeader;
+            }
+            else {
+                taskUpdateDTO.memberAssigned = ProjectLoaded.Team.members.FirstOrDefault(member => member.Id == AsigneeId);
+            }
 
             EditPopup.Close();
 
             await taskService.UpdateAsync(taskUpdateDTO);
+
+            TimeEstHour = 0;
+            TimeEstMinute = 0;
+            TimeEstSecond = 0;
 
             await UpdateView.InvokeAsync();
         }
@@ -126,7 +161,16 @@
         taskUpdateDTO.Description = SelectedTask.Description;
         taskUpdateDTO.Status = SelectedTask.Status;
         taskUpdateDTO.memberAssigned = SelectedTask.memberAssigned;
-        taskUpdateDTO.TimeEstimation = SelectedTask.TimeEstimation;
+
+        TimeEstHour = SelectedTask.TimeEstimation.Hour;
+        TimeEstMinute = SelectedTask.TimeEstimation.Minute;
+        TimeEstSecond = SelectedTask.TimeEstimation.Second;
+
+        if(SelectedTask.memberAssigned == null) {
+            AsigneeId = 0;
+        } else {
+            AsigneeId = SelectedTask.memberAssigned.Id;
+        }
 
         DetailsPopup.Close();
         EditPopup.Show();

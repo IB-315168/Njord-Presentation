@@ -13,7 +13,8 @@
         <Authorized>
         
             <Popup @ref="CreatePopup">
-                <div class="form-group field">
+                <h3>Create meeting</h3>
+            <div class="card">
                     <label>Title:</label>
                     <input type="text" @bind="@CreateMeetingDTO.Title" /><br />
                     <label>Description:</label>
@@ -41,7 +42,8 @@
             </Popup>
 
             <Popup @ref="EditPopup">
-                <div class="form-group field">
+            <h3>Edit meeting</h3>
+            <div class="card">
                     <label>Title:</label>
                     <input type="text" @bind="@meetingUpdateDTO.Title" /><br />
                     <label>Description:</label>
