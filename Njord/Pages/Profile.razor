@@ -6,6 +6,8 @@
 @using HttpClients.ClientInterfaces
 @using Microsoft.AspNetCore.Components
 @using UIComponents
+@using Radzen
+@using Radzen.Blazor
 @inject IMemberService memberService
 @inject ITeamService teamService
 @inject IAuthService authService
@@ -61,7 +63,11 @@ else  {
                 }
             </div>
             <div class="availability">
-                @*<Availability RecurAval=@user.RecurAvailablity Editable="disabled"></Availability>*@
+                <hr />
+                <h3>Availability</h3>
+                <RadzenScheduler Data="@data" TItem="DataItem" StartProperty="StartDate" EndProperty="EndDate" TextProperty="Text">
+                    <RadzenWeekView />
+                </RadzenScheduler>
             </div>
 
             <Popup ShowPopup="showPopup">
@@ -75,6 +81,42 @@ else  {
 }
 
 @code {
+
+    //Radzen Scheduler
+
+    class DataItem
+    {
+        public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
+        public string Text { get; set; }
+    }
+
+    DataItem[] data = new DataItem[]
+    {
+      new DataItem
+      {
+        StartDate = DateTime.Today,
+        EndDate = DateTime.Today.AddDays(1),
+        Text = "Blazor test"
+      },
+      new DataItem
+      {
+          StartDate = new DateTime(2022, 12, 24),
+          EndDate = new DateTime(2022, 12, 24).AddDays(1),
+          Text = "Christmas"
+      },
+      new DataItem
+      {
+          StartDate = new DateTime(2022, 11, 25, 11, 50, 0),
+          EndDate = new DateTime(2022, 11, 25, 12, 45, 0),
+          Text = "Meeting - JOOK"
+      },
+    };
+
+    //Radzen Scheduler
+
+
+
     [Parameter]
     public int Id { get; set; }
     private string msg = "";

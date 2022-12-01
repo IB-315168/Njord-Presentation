@@ -18,16 +18,21 @@
                 <label>Project name:</label>
                 <input type="text" @bind="projectName" @bind:event="oninput" />
                 <label>Team assigned:</label>
-                <EditForm Context="dtoContext" Model="@dto">
-                    <InputSelect @bind-Value="@dto.TeamId">
+                @if (memberTeams.Count() == 0) {
+                    <p>You have to be a teamleader of a team in order to create a project</p>
+                } else {
+                    <EditForm Context="dtoContext" Model="@dto">
+                        <InputSelect @bind-Value="@dto.TeamId">
 
-                        @foreach(TeamBasicDTO teamBasicDTO in memberTeams) {
-                            <option value=@teamBasicDTO.Id>@teamBasicDTO.Name</option>
-                        }
-                    </InputSelect>
-                    <label>Deadline (optional):</label>
-                    <InputDate @bind-Value="@dto.Deadline"></InputDate>
-                </EditForm>
+                            @foreach (TeamBasicDTO teamBasicDTO in memberTeams)
+                            {
+                                <option value=@teamBasicDTO.Id>@teamBasicDTO.Name</option>
+                            }
+                        </InputSelect>
+                        <label>Deadline (optional):</label>
+                        <InputDate @bind-Value="@dto.Deadline"></InputDate>
+                    </EditForm>
+                }
 
                 @if (!string.IsNullOrEmpty(resultMsg))
                 {
@@ -35,7 +40,7 @@
                 }
             </div>
             <div class="button-row">
-                <button @onclick="Create" disabled="@(string.IsNullOrEmpty(projectName))" class="acceptbtn">
+                <button @onclick="Create" disabled="@(string.IsNullOrEmpty(projectName) && memberTeams.Count() == 0)" class="acceptbtn">
                     Create project
                 </button>
             </div>
@@ -72,8 +77,10 @@
                 }
             }
 
-            dto.TeamId = memberTeams.FirstOrDefault().Id;
-            dto.Deadline = DateTime.Today;
+            if(memberTeams.Count != 0) {
+                dto.TeamId = memberTeams.FirstOrDefault().Id;
+            }
+        dto.Deadline = DateTime.Today;
 
         } catch (Exception e) {
             Console.WriteLine(e);
