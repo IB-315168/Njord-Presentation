@@ -66,7 +66,7 @@ else  {
             <div class="availability">
                 <hr/>
                 <h3>Availability</h3>
-                <RadzenScheduler Data="@data" TItem="DataItem" StartProperty="StartDate" EndProperty="EndDate" TextProperty="Text">
+                <RadzenScheduler Data="@availabilityEntities" TItem="AvailabilityEntity" StartProperty="startHour" EndProperty="endHour" TextProperty="memberName">
                     <RadzenWeekView />
                 </RadzenScheduler>
             </div>
@@ -98,46 +98,13 @@ else  {
 </style>
 
 @code {
-    //Radzen Scheduler
-
-    class DataItem
-    {
-        public DateTime StartDate { get; set; }
-        public DateTime EndDate { get; set; }
-        public string Text { get; set; }
-    }
-
-    DataItem[] data = new DataItem[]
-    {
-      new DataItem
-      {
-        StartDate = DateTime.Today,
-        EndDate = DateTime.Today.AddDays(1),
-        Text = "Blazor test"
-      },
-      new DataItem
-      {
-          StartDate = new DateTime(2022, 12, 24),
-          EndDate = new DateTime(2022, 12, 24).AddDays(1),
-          Text = "Christmas"
-      },
-      new DataItem
-      {
-          StartDate = new DateTime(2022, 11, 25, 11, 50, 0),
-          EndDate = new DateTime(2022, 11, 25, 12, 45, 0),
-          Text = "Meeting - JOOK"
-      },
-    };
-
-    //Radzen Scheduler
-
-
-
     [Parameter]
     public int Id { get; set; }
     private string msg = "";
+    private string AvailabilityMsg = "Availability";
 
     private MemberBasicDTO member = null!;
+    private IEnumerable<AvailabilityEntity> availabilityEntities { get; set; }
     private IEnumerable<TeamBasicDTO> memberTeams = null!;
 
     private bool showPopup = false;
@@ -150,6 +117,13 @@ else  {
         try
         {
             member = await memberService.GetByIdAsync(Id);
+
+            if(member.Availability == null) {
+                availabilityEntities = new List<AvailabilityEntity>();
+            } else {
+                availabilityEntities = member.Availability;
+            }
+
             memberTeams = await teamService.GetByUserIdAsync(Id);
         }
         catch (Exception e)

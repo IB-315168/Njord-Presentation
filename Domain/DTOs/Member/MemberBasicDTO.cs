@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Domain.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,15 +13,15 @@ namespace Domain.DTOs.Member
         public string FullName { get; set; }
         public string Email { get; set; }
         public string UserName { get; set; }
-        public Dictionary<string, bool[]> RecurAvailablity { get; set; }
 
-        public MemberBasicDTO(int id, string fullName, string email, string userName, Dictionary<string, bool[]> recurAvailablity)
+        public List<AvailabilityEntity> Availability { get; set; }
+
+        public MemberBasicDTO(int id, string fullName, string email, string userName)
         {
             Id = id;
             FullName = fullName;
             Email = email;
             UserName = userName;
-            RecurAvailablity = recurAvailablity;
         }
     }
 }

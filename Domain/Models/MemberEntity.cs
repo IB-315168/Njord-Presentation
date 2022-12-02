@@ -13,7 +13,8 @@ namespace Domain.Models
         public string Email { get; set; }
         public string UserName { get; set; }
         public string Password { get; set; }
-        public Dictionary<string, bool[]> RecurAvailablity;
+
+        public List<AvailabilityEntity> Availability { get; set; }
 
         public bool Equals(MemberEntity? other)
         {
