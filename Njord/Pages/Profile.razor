@@ -8,6 +8,7 @@
 @using UIComponents
 @using Radzen
 @using Radzen.Blazor
+@using System.ComponentModel.Design
 @inject IMemberService memberService
 @inject ITeamService teamService
 @inject IAuthService authService
@@ -63,9 +64,9 @@ else  {
                 }
             </div>
             <div class="availability">
-                <hr />
+                <hr/>
                 <h3>Availability</h3>
-                <RadzenScheduler style="height: 768px; margin-bottom: 20px;" Data="@data" TItem="DataItem" StartProperty="StartDate" EndProperty="EndDate" TextProperty="Text">
+                <RadzenScheduler Data="@data" TItem="DataItem" StartProperty="StartDate" EndProperty="EndDate" TextProperty="Text">
                     <RadzenWeekView />
                 </RadzenScheduler>
             </div>
@@ -80,8 +81,23 @@ else  {
     </AuthorizeView>   
 }
 
-@code {
+<style>
+    .rz-button rz-next{
+        opacity: 0 !important;
+        pointer-events: none !important;
+    }
+    
+    .rz-scheduler-nav{
+        pointer-events: none !important;
+      cursor: not-allowed !important;
+      opacity: 0 !important;
+      filter: alpha(opacity=65) !important;
+      -webkit-box-shadow: none !important;
+      box-shadow: none !important;
+    }
+</style>
 
+@code {
     //Radzen Scheduler
 
     class DataItem
