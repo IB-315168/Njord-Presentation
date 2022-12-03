@@ -107,7 +107,11 @@
 
 .availability {
     margin-top: 20px;
+    float: left;
+    width: 80%;
+    margin-bottom: 20px;
 }
+
 
 .form-group {
     margin-bottom: 10px;

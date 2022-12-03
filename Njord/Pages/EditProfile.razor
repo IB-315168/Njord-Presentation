@@ -5,6 +5,8 @@
 @using HttpClients.ClientInterfaces
 @using Microsoft.AspNetCore.Components
 @using UIComponents
+@using Radzen
+@using Radzen.Blazor
 @inject IMemberService memberService
 @inject IAuthService authService
 @inject NavigationManager navMgr
@@ -31,9 +33,76 @@
                 </div>
                 <button @onclick="UpdateAsync" class="acceptbtn">Save changes</button>
             </div>
-            
+            <div class="availability">
+                <hr/>
+                <h3>Availability</h3>
+                <button class="acceptbtn" @onclick="(() => createPopup.Show())">Add availability</button>
+                <RadzenScheduler @ref=@scheduler style="height: 768px;" Data="@availabilityEntities" TItem="AvailabilityEntity" StartProperty="startHour" EndProperty="endHour" TextProperty="memberName" AppointmentSelect="((args) => OnSelect(args))">
+                    <RadzenWeekView />
+                </RadzenScheduler>
+            </div>
         </Authorized>
     </AuthorizeView>
+
+    <Popup @ref=detailsPopup>
+        <h3>Availability</h3><br>
+        <p><b>From:     </b>@selectedAvailability.startHour.TimeOfDay</p>
+        <p><b>To:       </b>@selectedAvailability.endHour.TimeOfDay</p>
+        <p>
+            <button class="acceptbtn" @onclick="OnEdit">Edit</button>
+            <button class="deletebtn" @onclick="DeleteAvailability">Delete</button>
+        </p>
+    </Popup>
+
+    <Popup @ref=createPopup>
+        <h3>Add availability</h3><br>
+        <label>Day of week:</label>
+        <select @bind=DayOfWeek>
+            <option value="0">Monday</option>
+            <option value="1">Tuesday</option>
+            <option value="2">Wednesday</option>
+            <option value="3">Thursday</option>
+            <option value="4">Friday</option>
+            <option value="5">Saturday</option>
+            <option value="6">Sunday</option>
+        </select>
+        <label>From:</label>
+        <p>
+            <input style="width: 100px" type="number" min="0" max="23" @bind="StartHour" />:
+            <input style="width: 100px" type="number" min="0" max="59" @bind="StartMinute" />
+        </p>
+        <label>To:</label>
+        <p>
+            <input style="width: 100px" type="number" min="0" max="23" @bind="EndHour" />:
+            <input style="width: 100px" type="number" min="0" max="59" @bind="EndMinute" />
+        </p>
+        <button class="acceptbtn" @onclick="CreateAvailability">Save</button>
+    </Popup>
+
+    <Popup @ref=editPopup>
+        <h3>Edit availability</h3><br>
+        <label>Day of week:</label>
+        <select @bind=DayOfWeek>
+            <option value="0">Monday</option>
+            <option value="1">Tuesday</option>
+            <option value="2">Wednesday</option>
+            <option value="3">Thursday</option>
+            <option value="4">Friday</option>
+            <option value="5">Saturday</option>
+            <option value="6">Sunday</option>
+        </select>
+        <label>From:</label>
+        <p>
+            <input style="width: 100px" type="number" min="0" max="23" @bind="StartHour" />:
+            <input style="width: 100px" type="number" min="0" max="59" @bind="StartMinute" />
+        </p>
+        <label>To:</label>
+        <p>
+            <input style="width: 100px" type="number" min="0" max="23" @bind="EndHour" />:
+            <input style="width: 100px" type="number" min="0" max="59" @bind="EndMinute" />
+        </p>
+        <button class="acceptbtn" @onclick="EditAvailability">Save</button>
+    </Popup>
 }
 
 @if (!string.IsNullOrEmpty(msg))
@@ -41,44 +110,163 @@
     <label style="color: red">@msg</label>
 }
 
+<style>
+    .rz-button rz-next {
+        opacity: 0 !important;
+        pointer-events: none !important;
+    }
+
+    .rz-scheduler-nav {
+        pointer-events: none !important;
+        cursor: not-allowed !important;
+        opacity: 0 !important;
+        filter: alpha(opacity=65) !important;
+        -webkit-box-shadow: none !important;
+        box-shadow: none !important;
+    }
+</style>
+
 @code {
     [Parameter]
     public int Id { get; set; }
+    private List<AvailabilityEntity> availabilityEntities = new List<AvailabilityEntity>();
+    private AvailabilityEntity selectedAvailability { get; set; }
     private MemberUpdateDTO dto = null!;
+    private MemberBasicDTO userData { get; set; }
     private string msg = "";
+
+    private Popup detailsPopup;
+    private Popup createPopup;
+    private Popup editPopup;
+    private RadzenScheduler<AvailabilityEntity> scheduler;
+
+    private int DayOfWeek;
+    private DateTime From;
+    private DateTime To;
+
+    private int StartHour = 8, StartMinute = 0, EndHour = 23, EndMinute = 0;
 
     protected override async Task OnInitializedAsync()
     {
         msg = "";
 
-        MemberBasicDTO userData = await memberService.GetByIdAsync(Id);
+        userData = await memberService.GetByIdAsync(Id);
+
+        availabilityEntities = userData.Availability;
 
         dto = new MemberUpdateDTO(Id)
             {
                 UserName = userData.UserName,
                 Email = userData.Email,
-                Password = ""
+                Password = "",
+                Availability = userData.Availability
             };
     }   
-
-    //private void SetAvailability(Dictionary<string, bool[]> availability) {
-    //    dto.RecurAvailablity = availability;
-    //    Console.WriteLine("test");
-    //    Console.WriteLine($"{dto.RecurAvailablity["Mon"][0]}, {availability["Mon"][0]}");
-    //}
 
     private async Task UpdateAsync()
     {
         try
         {
             await memberService.UpdateAsync(dto);
-            await authService.LogoutAsync();
-            navMgr.NavigateTo("/");
+            if(userData.Email.Equals(dto.Email) && userData.UserName.Equals(dto.UserName) && dto.Password.Length == 0) {
+                navMgr.NavigateTo($"/profile/{dto.Id}");
+            } else {
+                await authService.LogoutAsync();
+                navMgr.NavigateTo("/");
+            }
         }
         catch (Exception e)
         {
             Console.WriteLine(e);
             msg = e.Message;
         }
+    }
+
+    private void OnSelect(SchedulerAppointmentSelectEventArgs<AvailabilityEntity> entity) {
+        selectedAvailability = entity.Data;
+
+        detailsPopup.Show();
+    }
+
+    private void OnEdit() {
+        DayOfWeek = selectedAvailability.DayOfWeek;
+        StartHour = selectedAvailability.startHour.Hour;
+        StartMinute = selectedAvailability.startHour.Minute;
+        EndHour = selectedAvailability.endHour.Hour;
+        EndMinute = selectedAvailability.endHour.Minute;
+
+        detailsPopup.Close();
+
+        editPopup.Show();
+    }
+
+    private void CreateAvailability() {
+        int currentDayOfWeek = (int)(DateTime.Now.DayOfWeek + 6) % 7;
+        DateTime currentDateTime = DateTime.Now.AddDays(DayOfWeek-currentDayOfWeek);
+
+
+        dto.Availability.Add(new AvailabilityEntity() {
+                Id = 1,
+                DayOfWeek = DayOfWeek,
+                memberName = dto.UserName,
+                startHour = new DateTime(currentDateTime.Year, currentDateTime.Month, currentDateTime.Day, StartHour, StartMinute, 0),
+                endHour = new DateTime(currentDateTime.Year, currentDateTime.Month, currentDateTime.Day, EndHour, EndMinute, 0)
+        });
+
+        availabilityEntities = dto.Availability;
+
+        DayOfWeek = 0;
+        StartHour = 8;
+        StartMinute = 0;
+        EndHour = 23;
+        EndMinute = 0;
+
+        scheduler.Reload();
+
+        createPopup.Close();
+    }
+
+    private void DeleteAvailability() {
+        detailsPopup.Close();
+
+        dto.Availability.Remove(selectedAvailability);
+
+        availabilityEntities = dto.Availability;
+
+        scheduler.Reload();
+    }
+
+    private void EditAvailability() {
+
+        dto.Availability.Remove(selectedAvailability);
+
+        int currentDayOfWeek = (int)(DateTime.Now.DayOfWeek + 6) % 7;
+        DateTime currentDateTime = DateTime.Now.AddDays(DayOfWeek - currentDayOfWeek);
+
+
+        dto.Availability.Add(new AvailabilityEntity()
+            {
+                Id = 1,
+                DayOfWeek = DayOfWeek,
+                memberName = dto.UserName,
+                startHour = new DateTime(currentDateTime.Year, currentDateTime.Month, currentDateTime.Day, StartHour, StartMinute, 0),
+                endHour = new DateTime(currentDateTime.Year, currentDateTime.Month, currentDateTime.Day, EndHour, EndMinute, 0)
+            });
+
+        availabilityEntities = dto.Availability;
+
+        DayOfWeek = 0;
+        StartHour = 8;
+        StartMinute = 0;
+        EndHour = 23;
+        EndMinute = 0;
+
+        editPopup.Close();
+
+        scheduler.Reload();
+    }
+
+    private void PreValidate() {
+        //Validation
     }
 }
