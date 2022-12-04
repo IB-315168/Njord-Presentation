@@ -1,0 +1,46 @@
+﻿@namespace UIComponents
+@using Domain.DTOs.LogBook
+@using Domain.Models
+@using HttpClients.ClientInterfaces
+@inject ILogBookService LogBookService;
+<Popup @ref="CreateEntry">
+    <h3>Create entry</h3>
+    <div class="card">
+        <label>Title:</label>
+        <input type="text"  /><br />
+        <label>Description:</label>
+        <button class="acceptbtn" @onclick="CreateEntryClicked">Create Entry</button>
+    </div>
+</Popup>
+@code {
+    [Parameter]
+    public ProjectEntity ProjectLoaded { get; set; }
+    [Parameter]
+    public LogBookEntryCreateDTO CreateEntryDTO { get; set; }
+    private LogBookUpdateDTO LogBookUpdateDto { get; set; }
+    public Popup CreateEntry { get; set; }
+    private string msg = "";
+    [Parameter]
+    public EventCallback UpdateView { get; set; }
+    
+    private async Task CreateEntryClicked()
+    {
+        try
+        {
+            // CreateEntry.Close();
+            // await LogBookService.UpdateAsync(new LogBookUpdateDTO()
+            // {
+            //     new LogBookEntryEntity()
+            // })
+            // await UpdateView.InvokeAsync();
+
+            
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            msg = e.Message;
+        }
+    }
+
+}

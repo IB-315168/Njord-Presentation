@@ -1,8 +1,10 @@
 ﻿@page "/project/{id:int}"
 @using Domain.DTOs
+@using Domain.DTOs.LogBook
 @using Domain.DTOs.Meeting
 @using Domain.DTOs.Task
 @using Domain.Models
+@using global::UIComponents
 @using HttpClients.ClientInterfaces
 @using Microsoft.AspNetCore.Components
 @using UIComponents
@@ -116,12 +118,16 @@
                     @if (LogBookEntity!=null)
                     {
                         <p>Logbook:</p>
-                        @foreach (LogBookEntryEntity logBookEntry in LogBookEntity.Entries)
-                        {
-                            <div class="card">
-                                <p style="border: 1px solid; padding: 5px">@logBookEntry.content</p>
-                            </div>
-                        }
+                        <select>
+                            @foreach (LogBookEntryEntity logBookEntry in LogBookEntity.Entries)
+                            {
+                                <option class="card">
+                                    <p style="border: 1px solid; padding: 5px">@logBookEntry.IdMeeting.StartDate</p>
+                                </option>
+                            }
+                        </select>
+                        <button class="acceptbtn" @onclick="@(() => logbookPopup.CreateEntry.Show())">Create entry</button>
+                        
                     }
                 </TabPage>
                 <TabPage Text="Team availability">
@@ -133,7 +139,7 @@
         }
 
         <MeetingPopup @ref="meetingPopup" ProjectLoaded="projectLoaded" CreateMeetingDTO="createMeetingDTO" SelectedMeeting="selectedMeeting" UpdateView="UpdateCalendar"></MeetingPopup>
-
+        <LogbookPopup @ref="logbookPopup" ProjectLoaded="projectLoaded" CreateEntryDTO="createEntryDTO" ></LogbookPopup>
         <TaskPopup @ref="taskPopup" ProjectLoaded="projectLoaded" CreateTaskDTO="createTaskDTO" SelectedTask="selectedTask" UpdateView="UpdateBoard"></TaskPopup>
 
     </Authorized>
@@ -162,13 +168,13 @@
 
     private MeetingCreateDTO createMeetingDTO = new MeetingCreateDTO();
     private MeetingEntity selectedMeeting { get; set; }
-
+    private LogBookEntryCreateDTO createEntryDTO { get; set; }
     private TaskCreateDTO createTaskDTO = new TaskCreateDTO();
     private TaskEntity selectedTask { get; set; }
 
     private TaskPopup taskPopup;
     private MeetingPopup meetingPopup;
-    private Logbook Logbook;
+    private LogbookPopup logbookPopup;
     private RadzenScheduler<AvailabilityEntity> avalCalendar;
 
     private ICollection<MeetingEntity> meetings { get; set; }
@@ -220,14 +226,14 @@
     }
     private void OnLogbookSelect()
     {
-        Logbook.Show();
+        logbookPopup.CreateEntry.Show();
     }
         
     public async Task<ICollection<LogBookEntryEntity>> getEntries()
     {
         try
         {
-            Logbook.Show();
+            //logbookPopup.EditLogbook.Show();
             entries = LogbookService.GetByProjectIdAsync(Id).Result.Entries;
         }
         catch (Exception e)
@@ -262,7 +268,17 @@
             msg = e.Message;
         }
     }
-
+    private async Task UpdateLogbook() {
+        try
+        {
+            entries = LogbookService.GetByProjectIdAsync(Id).Result.Entries;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            msg = e.Message;
+        }
+    }
     private void GetTeamAvailability()
     {
         List<AvailabilityEntity> totalAvailability = new List<AvailabilityEntity>();
