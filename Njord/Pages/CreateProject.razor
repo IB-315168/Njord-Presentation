@@ -112,7 +112,6 @@
             Console.WriteLine(dto.TeamId);
 
             await projectService.CreateAsync(dto);
-            await LogBookService.CreateAsync(logbookDTO);
             projectName = "";
             color = "green";
             resultMsg = "Project successfully created";
