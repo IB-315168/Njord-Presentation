@@ -2,6 +2,7 @@
 @using Domain.DTOs
 @using Domain.DTOs.LogBook
 @using Domain.DTOs.Meeting
+@using Domain.DTOs.Project
 @using Domain.DTOs.Task
 @using Domain.Models
 @using global::UIComponents
@@ -10,6 +11,7 @@
 @using UIComponents
 @using Radzen
 @using Radzen.Blazor
+@using System.Collections
 @inject IProjectService projectService
 @inject ILogBookService LogbookService
 @inject IMeetingService meetingService
@@ -118,16 +120,29 @@
                     @if (LogBookEntity!=null)
                     {
                         <p>Logbook:</p>
-                        <select>
-                            @foreach (LogBookEntryEntity logBookEntry in LogBookEntity.Entries)
+                        <select class="form-control" @bind="@id">
+                            @foreach (MeetingEntity meeting in meetings)
                             {
-                                <option class="card">
-                                    <p style="border: 1px solid; padding: 5px">@logBookEntry.IdMeeting.StartDate</p>
+                                <option class="card" value="@meeting.Id">
+                                    <p style="border: 1px solid; padding: 5px">@meeting.Title</p>
                                 </option>
                             }
                         </select>
-                        <button class="acceptbtn" @onclick="@(() => logbookPopup.CreateEntry.Show())">Create entry</button>
-                        
+                        <h1>value is @id</h1>
+                      //  <button class="acceptbtn" @onclick="@(() => logbookPopup.CreateEntry.Show())">Create entry</button>
+                       <button class="acceptbtn" @onclick="@(() => UpdateLogbook())">Create entry</button>
+                        @if (LogBookEntity.Entries.Count == 1)
+                        {
+                            <select>
+                                @foreach (LogBookEntryEntity logBookEntry in LogBookEntity.Entries)
+                                {
+                                    <option class="card">
+                                        <p style="border: 1px solid; padding: 5px">@logBookEntry.content</p>
+                                    </option>
+                                }
+                            </select>
+                        }
+        
                     }
                 </TabPage>
                 <TabPage Text="Team availability">
@@ -165,18 +180,18 @@
     [Parameter]
     public int Id { get; set; }
     private string msg = "";
-
+    
     private MeetingCreateDTO createMeetingDTO = new MeetingCreateDTO();
     private MeetingEntity selectedMeeting { get; set; }
     private LogBookEntryCreateDTO createEntryDTO { get; set; }
     private TaskCreateDTO createTaskDTO = new TaskCreateDTO();
     private TaskEntity selectedTask { get; set; }
-
+    private LogBookUpdateDTO LogBookUpdateDto;
     private TaskPopup taskPopup;
     private MeetingPopup meetingPopup;
     private LogbookPopup logbookPopup;
     private RadzenScheduler<AvailabilityEntity> avalCalendar;
-
+    private int id;
     private ICollection<MeetingEntity> meetings { get; set; }
     private ICollection<LogBookEntryEntity> entries { get; set; }
     private ICollection<TaskEntity> tasks { get; set; }
@@ -194,7 +209,7 @@
             projectLoaded = await projectService.GetByIdAsync(Id);
             meetings = await meetingService.GetByProjectIdAsync(Id);
             tasks = await taskService.GetByProjectIdAsync(Id);
-            
+
             GetTeamAvailability();
 
             createMeetingDTO.AssignedLeader = projectLoaded.Team.TeamLeader.Id;
@@ -228,22 +243,6 @@
     {
         logbookPopup.CreateEntry.Show();
     }
-        
-    public async Task<ICollection<LogBookEntryEntity>> getEntries()
-    {
-        try
-        {
-            //logbookPopup.EditLogbook.Show();
-            entries = LogbookService.GetByProjectIdAsync(Id).Result.Entries;
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-            msg = e.Message;
-        }
-        return entries;
-        
-    }
 
     private async Task UpdateCalendar() {
         try
@@ -268,15 +267,17 @@
             msg = e.Message;
         }
     }
-    private async Task UpdateLogbook() {
+    private async Task UpdateLogbook()
+    {
         try
         {
-            entries = LogbookService.GetByProjectIdAsync(Id).Result.Entries;
+            foreach (MeetingEntity meeting in meetings.Where(meeting => meeting.Id.Equals(id))) 
+                LogBookUpdateDto.entries.Add(new LogBookEntryEntity(1, LogBookUpdateDto.Id, meeting, "Entry test"));
         }
         catch (Exception e)
         {
             Console.WriteLine(e);
-            msg = e.Message;
+            throw;
         }
     }
     private void GetTeamAvailability()
