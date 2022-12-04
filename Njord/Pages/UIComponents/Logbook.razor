@@ -1,0 +1,47 @@
+﻿@namespace UIComponents
+@using Domain.Models
+@using HttpClients.ClientInterfaces
+@using Radzen
+@using Radzen.Blazor
+@using Domain.DTOs.Meeting
+@using Domain.DTOs.LogBook
+@inject ILogBookService LogBookService
+@if (ShowLogbook)
+{
+    <p>progress</p>
+}
+<AuthorizeView>
+    <NotAuthorized>
+        <label>You must be logged in to perform that action.</label>
+    </NotAuthorized>
+    <Authorized>
+         <h3>Logbook</h3>
+    </Authorized>
+</AuthorizeView>
+
+@code {
+    private string msg = "";
+    private LogBookCreateDTO _createDto;
+    [Parameter]
+    public RenderFragment ChildContent { get; set; } = null!;
+    [Parameter]
+    public bool ShowLogbook { get; set; }
+    public void Show()
+    {
+        ShowLogbook = true;
+    }
+    private async Task AddEntry()
+    {
+        try
+        {
+
+            await LogBookService.CreateAsync(_createDto);
+            
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            msg = e.Message;
+        }
+    }
+}
