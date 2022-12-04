@@ -114,7 +114,7 @@
                     }                    
                 </TabPage>
                 <TabPage Text="Logbook" >
-                    @if (LogbookService.GetByProjectIdAsync(Id)!=null)
+                    @if (LogBookEntity!=null)
                     {
                         <p>Logbook:</p>
                         @foreach (LogBookEntryEntity logBookEntry in LogBookEntity.Entries)
@@ -185,7 +185,7 @@
         msg = "";
         try
         {
-            LogBookEntity = await LogbookService.GetByIdAsync(1);
+            LogBookEntity = await LogbookService.GetByProjectIdAsync(Id);
             projectLoaded = await projectService.GetByIdAsync(Id);
             meetings = await meetingService.GetByProjectIdAsync(Id);
             tasks = await taskService.GetByProjectIdAsync(Id);
