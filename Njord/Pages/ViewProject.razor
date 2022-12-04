@@ -3,16 +3,17 @@
 @using Domain.DTOs.Meeting
 @using Domain.DTOs.Task
 @using Domain.Models
+@using global::UIComponents
 @using HttpClients.ClientInterfaces
 @using Microsoft.AspNetCore.Components
 @using UIComponents
 @using Radzen
 @using Radzen.Blazor
 @inject IProjectService projectService
+@inject ILogBookService LogbookService
 @inject IMeetingService meetingService
 @inject ITaskService taskService
 @inject NavigationManager navMgr
-
 <AuthorizeView>
     <NotAuthorized>
         <label>You must be logged in to perform that action</label>
@@ -112,6 +113,18 @@
                         }
                     }                    
                 </TabPage>
+                <TabPage Text="Logbook" >
+                    @if (LogbookService.GetByProjectIdAsync(Id)!=null)
+                    {
+                        <p>Logbook:</p>
+                        @foreach (LogBookEntryEntity logBookEntry in LogBookEntity.Entries)
+                        {
+                            <div class="card">
+                                <p style="border: 1px solid; padding: 5px">@logBookEntry.content</p>
+                            </div>
+                        }
+                    }
+                </TabPage>
                 <TabPage Text="Team availability">
                     <RadzenScheduler @ref=avalCalendar style="height: 768px;" Data="@teamAvailability" TItem="AvailabilityEntity" StartProperty="startHour" EndProperty="endHour" TextProperty="memberName">
                         <RadzenWeekView />
@@ -156,12 +169,14 @@
 
     private TaskPopup taskPopup;
     private MeetingPopup meetingPopup;
-
+    private Logbook Logbook;
     private RadzenScheduler<AvailabilityEntity> avalCalendar;
 
     private ICollection<MeetingEntity> meetings { get; set; }
+    private ICollection<LogBookEntryEntity> entries { get; set; }
     private ICollection<TaskEntity> tasks { get; set; }
     private ProjectEntity projectLoaded { get; set; }
+    private LogBookEntity LogBookEntity { get; set; }
 
     private List<AvailabilityEntity> teamAvailability = new List<AvailabilityEntity>();
 
@@ -170,10 +185,11 @@
         msg = "";
         try
         {
+            LogBookEntity = await LogbookService.GetByIdAsync(1);
             projectLoaded = await projectService.GetByIdAsync(Id);
             meetings = await meetingService.GetByProjectIdAsync(Id);
             tasks = await taskService.GetByProjectIdAsync(Id);
-
+            
             GetTeamAvailability();
 
             createMeetingDTO.AssignedLeader = projectLoaded.Team.TeamLeader.Id;
@@ -196,14 +212,33 @@
 
         taskPopup.DetailsPopup.Show();
     }
-
+    
     private void OnMeetingSelect(SchedulerAppointmentSelectEventArgs<MeetingEntity> args)
     {
         selectedMeeting = args.Data;
 
         meetingPopup.DetailsPopup.Show();
     }
+    private void OnLogbookSelect()
+    {
+        Logbook.Show();
+    }
 
+    public async Task<ICollection<LogBookEntryEntity>> getEntries()
+    {
+        try
+        {
+            Logbook.Show();
+            entries = LogbookService.GetByProjectIdAsync(Id).Result.Entries;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            msg = e.Message;
+        }
+        return entries;
+        
+    }
 
     private async Task UpdateCalendar() {
         try

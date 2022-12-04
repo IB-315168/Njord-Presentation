@@ -14,7 +14,7 @@ namespace Domain.Models
         public DateTime StartDate { get; set; }
         public DateTime Deadline { get; set; }
         public ICollection<RequirementEntity> Requirements { get; set; }
-
+        
 
         public ProjectEntity() { }
 

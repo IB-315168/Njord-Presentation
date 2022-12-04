@@ -64,4 +64,22 @@ public class LogBookHttpClient : ILogBookService
 
         return logBook;
     }
+
+    public async Task<LogBookEntity> GetByProjectIdAsync(int id)
+    {
+        HttpResponseMessage response = await client.GetAsync($"/api/logbook?id="+id);
+        string result = await response.Content.ReadAsStringAsync();
+
+        if (!response.IsSuccessStatusCode)
+        {
+            throw new Exception(result);
+        }
+
+        LogBookEntity logBook = JsonSerializer.Deserialize<LogBookEntity>(result, new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true
+        })!;
+
+        return logBook;
+    }
 }

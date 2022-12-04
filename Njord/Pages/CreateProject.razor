@@ -1,10 +1,12 @@
 ﻿@page "/CreateProject"
 @using Domain.DTOs
+@using Domain.DTOs.LogBook
 @using Domain.DTOs.Project
 @using Domain.DTOs.Team
 @using HttpClients.ClientInterfaces
 @inject ITeamService teamService
 @inject IProjectService projectService
+@inject ILogBookService LogBookService
 @inject AuthenticationStateProvider asp
 
 <AuthorizeView>
@@ -53,7 +55,7 @@
     private string projectName { get; set; }
     private DateTime? deadline { get; set; }
     private ProjectCreateDTO dto = new ProjectCreateDTO();
-
+    private LogBookCreateDTO logbookDTO = new LogBookCreateDTO();
     private List<TeamBasicDTO> memberTeams = new List<TeamBasicDTO>();
 
     private string color { get; set; }
@@ -81,7 +83,7 @@
                 dto.TeamId = memberTeams.FirstOrDefault().Id;
             }
         dto.Deadline = DateTime.Today;
-
+            logbookDTO.ProjectId = teamId;
         } catch (Exception e) {
             Console.WriteLine(e);
             resultMsg = e.Message;
@@ -98,9 +100,9 @@
             int id = Int32.Parse(asp.GetAuthenticationStateAsync().Result
                 .User.Claims.First(c => c.Type.Equals("Id")).Value);
 
-                dto.Name = projectName;
+            dto.Name = projectName;
 
-            //    Console.WriteLine(dto.TeamId);
+    //    Console.WriteLine(dto.TeamId);
             //dto.Name = projectName;
             //dto.TeamId = teamId;
             //if(deadline != null) {
@@ -110,7 +112,7 @@
             Console.WriteLine(dto.TeamId);
 
             await projectService.CreateAsync(dto);
-
+            await LogBookService.CreateAsync(logbookDTO);
             projectName = "";
             color = "green";
             resultMsg = "Project successfully created";
