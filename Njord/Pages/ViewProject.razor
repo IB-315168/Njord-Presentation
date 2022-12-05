@@ -136,8 +136,8 @@
                 <TabPage Text="Logbook">
                     @if (LogBookEntity != null)
                     {
-                        <p>Logbook:</p>
-                        <select class="form-control" @bind="@id" >
+                        <p>meetings:</p>
+                        <select class="form-control"  @bind="MeetingId" >
                             @foreach (MeetingEntity meeting in meetings)
                             {
                                 <option class="card" value="@meeting.Id">
@@ -145,22 +145,23 @@
                                 </option>
                             }
                         </select>
-                       // <button class="acceptbtn" @onclick="@(() => logbookPopup.CreateEntry.Show())">Create entry</button>
+                        <p>entries:</p>
                         
-                        <button class="acceptbtn" @onclick="@(() => UpdateLogbook())">Create entry</button>
+                        // <button class="acceptbtn" @onclick="@(() => UpdateLogbook())">Create entry</button>
                         @if (LogBookEntity.Entries !=null)
                         {
                             <select class="form-control" @bind="@id" >
-                            @foreach (LogBookEntryEntity logBookEntry in LogBookEntity.Entries)
+                                @foreach (LogBookEntryEntity logBookEntry in LogBookEntity.Entries)
                                 {
                                     <option class="card" value="@logBookEntry.Id">
-                                        <p style="border: 1px solid; padding: 5px" >@logBookEntry.Id</p>
+                                        <p style="border: 1px solid; padding: 5px" >@logBookEntry.IdMeeting.Title @logBookEntry.IdMeeting.StartDate</p>
                                     </option>
                                 }
                             </select>
-                            <button class="acceptbtn" @onclick="@(() => ShowEntry())">Show entry</button>
                             <p style="border: 1px solid; padding: 5px">@content</p>
-                    }
+                            <button class="acceptbtn" @onclick="@(() => ShowEntry())">Show entry</button>
+                            <button class="acceptbtn"@onclick="@(() => OnMeetingCreateSelect())">Create entry</button>
+                        }
                     }
                 </TabPage>
                 <TabPage Text="Team availability">
@@ -172,7 +173,7 @@
         }
 
         <MeetingPopup @ref="meetingPopup" ProjectLoaded="projectLoaded" CreateMeetingDTO="createMeetingDTO" SelectedMeeting="selectedMeeting" UpdateView="UpdateCalendar"></MeetingPopup>
-        <LogbookPopup @ref="logbookPopup" ProjectLoaded="projectLoaded" CreateEntryDTO="createEntryDTO"></LogbookPopup>
+        <LogbookPopup @ref="logbookPopup" ProjectLoaded="projectLoaded" CreateEntryDTO="createEntryDTO" SelectedMeetingCreate="selectedmeetingCreate" ></LogbookPopup>
         <TaskPopup @ref="taskPopup" ProjectLoaded="projectLoaded" CreateTaskDTO="createTaskDTO" SelectedTask="selectedTask" UpdateView="UpdateBoard"></TaskPopup>
 
     </Authorized>
@@ -200,13 +201,15 @@
     public int Id { get; set; }
 
     private string msg = "";
-
+    private int MeetingId;
     private int id;
     private string content;
     
     private MeetingCreateDTO createMeetingDTO = new MeetingCreateDTO();
     private MeetingEntity selectedMeeting { get; set; }
+    private MeetingEntity selectedmeetingCreate { get; set; }
     private LogBookEntryCreateDTO createEntryDTO { get; set; }
+    
     private TaskCreateDTO createTaskDTO = new TaskCreateDTO();
     private TaskEntity selectedTask { get; set; }
     private LogBookUpdateDTO updateLogbookDTO{ get; set; }
@@ -267,6 +270,8 @@
         meetingPopup.DetailsPopup.Show();
     }
 
+    
+    
     private async Task UpdateCalendar()
     {
         try
@@ -293,28 +298,27 @@
         }
     }
 
-    private async Task UpdateLogbook()
+    private void OnMeetingCreateSelect()
     {
         try
         {
             foreach (MeetingEntity meeting in meetings)
             {
-                if (meeting.Id.Equals(id))
+                if (meeting.Id.Equals(MeetingId))
                 {
-                    Console.WriteLine(id);
-                    Console.WriteLine(meeting.Description);
-                    LogBookEntryEntity entry = new  LogBookEntryEntity(2, LogBookEntity.Id, meeting, "Entry test");
-                    updateLogbookDTO.entries.Add(entry);
-                    LogbookService.UpdateAsync(updateLogbookDTO);
+                    Console.WriteLine(MeetingId);
+                    selectedmeetingCreate = meeting;
+                    logbookPopup.CreateEntry.Show();
                 }
             }
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
-            Console.WriteLine(e);
+            Console.WriteLine(ex);
             throw;
         }
     }
+
     private async Task ShowEntry()
     {
         try
