@@ -5,6 +5,7 @@
 @using Domain.Models
 @using HttpClients.ClientInterfaces
 @using Microsoft.AspNetCore.Components
+@using System.Globalization
 @using UIComponents
 @using Radzen
 @using Radzen.Blazor
@@ -95,6 +96,10 @@ else  {
       -webkit-box-shadow: none !important;
       box-shadow: none !important;
     }
+
+    .rz-scheduler {
+        height: 768px;
+    }
 </style>
 
 @code {
@@ -120,8 +125,11 @@ else  {
             if(member.Availability == null) {
                 availabilityEntities = new List<AvailabilityEntity>();
             } else {
+                Console.WriteLine(member.Availability.First().endHour);
                 availabilityEntities = member.Availability;
             }
+
+            Console.WriteLine(System.Globalization.CultureInfo.CurrentCulture);
 
             memberTeams = await teamService.GetByUserIdAsync(Id);
         }

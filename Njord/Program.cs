@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Njord;
 using Radzen;
+using System.Globalization;
 using Domain.Auth;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
@@ -26,5 +27,8 @@ builder.Services.AddScoped<IMeetingService, MeetingHttpClient>();
 builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthProvider>();
 
 builder.Services.AddAuthorizationCore();
+
+CultureInfo.DefaultThreadCurrentCulture = new CultureInfo("da-DK");
+CultureInfo.DefaultThreadCurrentUICulture = new CultureInfo("da-DK");
 
 await builder.Build().RunAsync();
