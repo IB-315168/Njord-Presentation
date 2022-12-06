@@ -139,15 +139,9 @@
                         <select class="form-control"  @bind="MeetingId" >
                             @foreach (MeetingEntity meeting in meetings)
                             {
-                                @foreach (LogBookEntryEntity logBookEntryEntity in entries)
-                                {
-                                    if (meeting.Id.Equals(logBookEntryEntity.IdMeeting.Id)==false)
-                                    {
-                                        <option class="card" value="@meeting.Id">
-                                            <p style="border: 1px solid; padding: 5px">@meeting.Title</p>
-                                        </option>
-                                    }
-                                }
+                                <option class="card" value="@meeting.Id">
+                                    <p style="border: 1px solid; padding: 5px">@meeting.Title</p>
+                                </option>
                             }
                         </select>
                         <p>entries:</p>
@@ -209,7 +203,7 @@
     private int MeetingId;
     private int id;
     private string content;
-    private List<LogBookEntryEntity> entries = new List<LogBookEntryEntity>();
+    private List<int> entries = new List<int>();
     private MeetingCreateDTO createMeetingDTO = new MeetingCreateDTO();
     private MeetingEntity selectedMeeting { get; set; }
     private MeetingEntity selectedmeetingCreate { get; set; }
@@ -310,8 +304,12 @@
             {
                 if (meeting.Id.Equals(MeetingId))
                 {
-                    selectedmeetingCreate = meeting;
-                    logbookPopup.CreateEntry.Show();
+                    if (kk().Contains(meeting.Id)==false)
+                    {
+                        selectedmeetingCreate = meeting;
+                        logbookPopup.CreateEntry.Show();
+                    }
+                    
                 }
             }
         }
@@ -322,6 +320,14 @@
         }
     }
 
+    private List<int> kk()
+    {
+        foreach (LogBookEntryEntity VARIABLE in LogBookEntity.Entries)
+        {
+            entries.Add(VARIABLE.IdMeeting.Id);
+        }
+        return entries;
+    }
     private async Task ShowEntry()
     {
         try
