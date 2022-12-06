@@ -21,9 +21,12 @@
         <label>You must be logged in to perform that action</label>
     </NotAuthorized>
     <Authorized>
-        @if(projectLoaded == null) {
+        @if (projectLoaded == null)
+        {
             <h3>Loading...</h3>
-        } else {
+        }
+        else
+        {
             @if (@context.User.Claims.First(c => c.Type.Equals("Id")).Value.Equals(projectLoaded.Team.TeamLeader.Id.ToString()))
             {
                 <div class="editProfile">
@@ -32,7 +35,7 @@
                 </div>
             }
             <h3>@projectLoaded.Name</h3>
-            <hr />
+            <hr/>
             <TabControl>
                 <TabPage Text="Calendar">
                     @if (@context.User.Claims.First(c => c.Type.Equals("Id")).Value.Equals(projectLoaded.Team.TeamLeader.Id.ToString()))
@@ -40,34 +43,39 @@
                         <button class="acceptbtn" @onclick="@(() => meetingPopup.CreatePopup.Show())">Create meeting</button>
                     }
                     <RadzenScheduler style="height: 768px;" Data="@meetings" TItem="MeetingEntity" StartProperty="StartDate" EndProperty="EndDate"
-                                 TextProperty="Title" SelectedIndex="2" AppointmentSelect="OnMeetingSelect">
-                        <RadzenDayView />
-                        <RadzenWeekView />
-                        <RadzenMonthView />
+                                     TextProperty="Title" SelectedIndex="2" AppointmentSelect="OnMeetingSelect">
+                        <RadzenDayView/>
+                        <RadzenWeekView/>
+                        <RadzenMonthView/>
                     </RadzenScheduler>
                 </TabPage>
                 <TabPage Text="Board">
                     <button class="acceptbtn" @onclick="@(() => taskPopup.CreatePopup.Show())">Create task</button>
-                    @if(tasks.Count() == 0) {
+                    @if (tasks.Count() == 0)
+                    {
                         <p>There are no tasks yet for this project.</p>
                     }
-                    else {
+                    else
+                    {
                         <div class="container">
                             <div class="row">
                                 <div class="col-4">
                                     <h4>Todo:</h4>
                                     @foreach (TaskEntity task in tasks.Where(task => task.Status.Equals("Todo")))
-                                        {
+                                    {
                                         <div class="task todo" @onclick="(() => OnTaskSelect(task))">
-                                                <p id="title">@task.Title</p>
-                                                @if(task.memberAssigned != null) {
-                                                    <p id="assigned">Assigned to: @task.memberAssigned.FullName</p>
-                                                } else {
-                                                    <p id="assigned">Not assigned yet</p>
-                                                }
-                                                <p id="timeest">Time estimated: @task.TimeEstimation.TimeOfDay</p>
-                                            </div>
-                                        }
+                                            <p id="title">@task.Title</p>
+                                            @if (task.memberAssigned != null)
+                                            {
+                                                <p id="assigned">Assigned to: @task.memberAssigned.FullName</p>
+                                            }
+                                            else
+                                            {
+                                                <p id="assigned">Not assigned yet</p>
+                                            }
+                                            <p id="timeest">Time estimated: @task.TimeEstimation.TimeOfDay</p>
+                                        </div>
+                                    }
                                 </div>
                                 <div class="col-4">
                                     <h4>In progress:</h4>
@@ -75,9 +83,12 @@
                                     {
                                         <div class="task inprogress"@onclick="(() => OnTaskSelect(task))">
                                             <p id="title">@task.Title</p>
-                                            @if(task.memberAssigned != null) {
-                                                    <p id="assigned">Assigned to: @task.memberAssigned.FullName</p>
-                                            } else {
+                                            @if (task.memberAssigned != null)
+                                            {
+                                                <p id="assigned">Assigned to: @task.memberAssigned.FullName</p>
+                                            }
+                                            else
+                                            {
                                                 <p id="assigned">Not assigned yet</p>
                                             }
                                             <p id="timeest">Time estimated: @task.TimeEstimation.TimeOfDay</p>
@@ -90,9 +101,12 @@
                                     {
                                         <div class="task completed" @onclick="(() => OnTaskSelect(task))">
                                             <p id="title">@task.Title</p>
-                                            @if(task.memberAssigned != null) {
-                                                    <p id="assigned">Assigned to: @task.memberAssigned.FullName</p>
-                                            } else {
+                                            @if (task.memberAssigned != null)
+                                            {
+                                                <p id="assigned">Assigned to: @task.memberAssigned.FullName</p>
+                                            }
+                                            else
+                                            {
                                                 <p id="assigned">Not assigned yet</p>
                                             }
                                             <p id="timeest">Time estimated: @task.TimeEstimation.TimeOfDay</p>
@@ -104,22 +118,25 @@
                     }
                 </TabPage>
                 <TabPage Text="Requirements">
-                    @if(projectLoaded.Requirements.Count() == 0) {
+                    @if (projectLoaded.Requirements.Count() == 0)
+                    {
                         <p>This project does not have any requirements</p>
-                    } else {
+                    }
+                    else
+                    {
                         @foreach (RequirementEntity requirement in projectLoaded.Requirements)
                         {
                             <div class="card">
                                 <p style="border: 1px solid; padding: 5px">@requirement.content</p>
                             </div>
                         }
-                    }                    
+                    }
                 </TabPage>
-                <TabPage Text="Logbook" >
-                    @if (LogBookEntity!=null)
+                <TabPage Text="Logbook">
+                    @if (LogBookEntity != null)
                     {
-                        <p>Logbook:</p>
-                        <select class="form-control" @bind="@id">
+                        <p>meetings:</p>
+                        <select class="form-control"  @bind="MeetingId" >
                             @foreach (MeetingEntity meeting in meetings)
                             {
                                 <option class="card" value="@meeting.Id">
@@ -127,33 +144,35 @@
                                 </option>
                             }
                         </select>
-                        <h1>value is @id</h1>
-                      //  <button class="acceptbtn" @onclick="@(() => logbookPopup.CreateEntry.Show())">Create entry</button>
-                       <button class="acceptbtn" @onclick="@(() => UpdateLogbook())">Create entry</button>
-                        @if (LogBookEntity.Entries.Count == 1)
+                        <p>entries:</p>
+                        
+                        // <button class="acceptbtn" @onclick="@(() => UpdateLogbook())">Create entry</button>
+                        @if (LogBookEntity.Entries !=null)
                         {
-                            <select>
+                            <select class="form-control" @bind="@id" >
                                 @foreach (LogBookEntryEntity logBookEntry in LogBookEntity.Entries)
                                 {
-                                    <option class="card">
-                                        <p style="border: 1px solid; padding: 5px">@logBookEntry.content</p>
+                                    <option class="card" value="@logBookEntry.Id">
+                                        <p style="border: 1px solid; padding: 5px" >@logBookEntry.IdMeeting.Title @logBookEntry.IdMeeting.StartDate</p>
                                     </option>
                                 }
                             </select>
+                            <p style="border: 1px solid; padding: 5px">@content</p>
+                            <button class="acceptbtn" @onclick="@(() => ShowEntry())">Show entry</button>
+                            <button class="acceptbtn"@onclick="@(() => OnMeetingCreateSelect())">Create entry</button>
                         }
-        
                     }
                 </TabPage>
                 <TabPage Text="Team availability">
                     <RadzenScheduler @ref=avalCalendar style="height: 768px;" Data="@teamAvailability" TItem="AvailabilityEntity" StartProperty="startHour" EndProperty="endHour" TextProperty="memberName">
-                        <RadzenWeekView />
+                        <RadzenWeekView/>
                     </RadzenScheduler>
                 </TabPage>
             </TabControl>
         }
 
         <MeetingPopup @ref="meetingPopup" ProjectLoaded="projectLoaded" CreateMeetingDTO="createMeetingDTO" SelectedMeeting="selectedMeeting" UpdateView="UpdateCalendar"></MeetingPopup>
-        <LogbookPopup @ref="logbookPopup" ProjectLoaded="projectLoaded" CreateEntryDTO="createEntryDTO" ></LogbookPopup>
+        <LogbookPopup @ref="logbookPopup" ProjectLoaded="projectLoaded" CreateEntryDTO="createEntryDTO" SelectedMeetingCreate="selectedmeetingCreate" ></LogbookPopup>
         <TaskPopup @ref="taskPopup" ProjectLoaded="projectLoaded" CreateTaskDTO="createTaskDTO" SelectedTask="selectedTask" UpdateView="UpdateBoard"></TaskPopup>
 
     </Authorized>
@@ -176,21 +195,27 @@
 </style>
 
 @code {
+
     [Parameter]
     public int Id { get; set; }
+
     private string msg = "";
+    private int MeetingId;
+    private int id;
+    private string content;
     
     private MeetingCreateDTO createMeetingDTO = new MeetingCreateDTO();
     private MeetingEntity selectedMeeting { get; set; }
+    private MeetingEntity selectedmeetingCreate { get; set; }
     private LogBookEntryCreateDTO createEntryDTO { get; set; }
+    
     private TaskCreateDTO createTaskDTO = new TaskCreateDTO();
     private TaskEntity selectedTask { get; set; }
-    private LogBookUpdateDTO LogBookUpdateDto;
+    private LogBookUpdateDTO updateLogbookDTO{ get; set; }
     private TaskPopup taskPopup;
     private MeetingPopup meetingPopup;
     private LogbookPopup logbookPopup;
     private RadzenScheduler<AvailabilityEntity> avalCalendar;
-    private int id;
     private ICollection<MeetingEntity> meetings { get; set; }
     private ICollection<LogBookEntryEntity> entries { get; set; }
     private ICollection<TaskEntity> tasks { get; set; }
@@ -208,7 +233,11 @@
             projectLoaded = await projectService.GetByIdAsync(Id);
             meetings = await meetingService.GetByProjectIdAsync(Id);
             tasks = await taskService.GetByProjectIdAsync(Id);
-
+            updateLogbookDTO = new LogBookUpdateDTO(LogBookEntity.Id)
+            {
+                entries = new List<LogBookEntryEntity>()
+            };
+            updateLogbookDTO.entries.AddRange(LogBookEntity.Entries);
             GetTeamAvailability();
 
             createMeetingDTO.AssignedLeader = projectLoaded.Team.TeamLeader.Id;
@@ -226,24 +255,24 @@
     }
 
 
-    private void OnTaskSelect(TaskEntity task) {
+    private void OnTaskSelect(TaskEntity task)
+    {
         selectedTask = task;
 
         taskPopup.DetailsPopup.Show();
     }
-    
+
     private void OnMeetingSelect(SchedulerAppointmentSelectEventArgs<MeetingEntity> args)
     {
         selectedMeeting = args.Data;
 
         meetingPopup.DetailsPopup.Show();
     }
-    private void OnLogbookSelect()
-    {
-        logbookPopup.CreateEntry.Show();
-    }
 
-    private async Task UpdateCalendar() {
+    
+    
+    private async Task UpdateCalendar()
+    {
         try
         {
             meetings = await meetingService.GetByProjectIdAsync(Id);
@@ -255,7 +284,8 @@
         }
     }
 
-    private async Task UpdateBoard() {
+    private async Task UpdateBoard()
+    {
         try
         {
             tasks = await taskService.GetByProjectIdAsync(Id);
@@ -266,12 +296,41 @@
             msg = e.Message;
         }
     }
-    private async Task UpdateLogbook()
+
+    private void OnMeetingCreateSelect()
     {
         try
         {
-            foreach (MeetingEntity meeting in meetings.Where(meeting => meeting.Id.Equals(id))) 
-                LogBookUpdateDto.entries.Add(new LogBookEntryEntity(1, LogBookUpdateDto.Id, meeting, "Entry test"));
+            foreach (MeetingEntity meeting in meetings)
+            {
+                if (meeting.Id.Equals(MeetingId))
+                {
+                    Console.WriteLine(MeetingId);
+                    selectedmeetingCreate = meeting;
+                    logbookPopup.CreateEntry.Show();
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+            throw;
+        }
+    }
+
+    private async Task ShowEntry()
+    {
+        try
+        {
+            foreach (LogBookEntryEntity entry in LogBookEntity.Entries)
+            {
+                if (entry.Id.Equals(id))
+                {
+                    Console.WriteLine(id);
+                    Console.WriteLine(entry.content);
+                    content = entry.content;
+                }
+            }
         }
         catch (Exception e)
         {
@@ -283,7 +342,8 @@
     {
         List<AvailabilityEntity> totalAvailability = new List<AvailabilityEntity>();
 
-        foreach(MemberEntity member in projectLoaded.Team.members) {
+        foreach (MemberEntity member in projectLoaded.Team.members)
+        {
             totalAvailability.AddRange(member.Availability);
         }
 
@@ -292,7 +352,8 @@
         int currentDayOfWeek = (int)(DateTime.Now.DayOfWeek + 6) % 7;
         DateTime currentDateTime = DateTime.Now.AddDays(-currentDayOfWeek);
 
-        for(int i = 0; i < 7; i++) {
+        for (int i = 0; i < 7; i++)
+        {
             AvailabilityEntity initial = new AvailabilityEntity()
             {
                 Id = 1,
@@ -302,7 +363,8 @@
                 endHour = new DateTime(currentDateTime.Year, currentDateTime.Month, currentDateTime.Day, 23, 0, 0)
             };
 
-            if (totalAvailability.Where(aval => aval.DayOfWeek == i).Count() != 0) {
+            if (totalAvailability.Where(aval => aval.DayOfWeek == i).Count() != 0)
+            {
                 foreach (AvailabilityEntity entity in totalAvailability.Where(aval => aval.DayOfWeek == i))
                 {
                     initial = unionAvailability(initial, entity);
@@ -317,31 +379,38 @@
             currentDateTime = currentDateTime.AddDays(1);
             Console.WriteLine(currentDateTime);
         }
-
     }
 
-    private AvailabilityEntity unionAvailability(AvailabilityEntity entity1, AvailabilityEntity entity2) {
+    private AvailabilityEntity unionAvailability(AvailabilityEntity entity1, AvailabilityEntity entity2)
+    {
         DateTime StartHour, EndHour;
 
-        if (entity1.startHour < entity2.startHour) {
+        if (entity1.startHour < entity2.startHour)
+        {
             StartHour = entity2.startHour;
-        } else {
+        }
+        else
+        {
             StartHour = entity1.startHour;
         }
 
-        if (entity1.endHour < entity2.endHour) {
+        if (entity1.endHour < entity2.endHour)
+        {
             EndHour = entity1.endHour;
-        } else {
+        }
+        else
+        {
             EndHour = entity2.endHour;
         }
 
         return new AvailabilityEntity()
-            {
-                Id = 1,
-                memberName = projectLoaded.Team.Name,
-                DayOfWeek = entity1.DayOfWeek,
-                startHour = StartHour,
-                endHour = EndHour
-            };
+        {
+            Id = 1,
+            memberName = projectLoaded.Team.Name,
+            DayOfWeek = entity1.DayOfWeek,
+            startHour = StartHour,
+            endHour = EndHour
+        };
     }
+
 }

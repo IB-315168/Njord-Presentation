@@ -4,44 +4,45 @@
 @using Domain.Models
 @using HttpClients.ClientInterfaces
 @inject IMeetingService meetingService
-@inject ILogBookService LogBookService;
+@inject ILogBookService LogbookService
 <Popup @ref="CreateEntry">
     <h3>Create entry</h3>
     <div class="card">
         <label>Title:</label>
-        <input type="text"/><br/>
-        <label>Description:</label>
-        @if (meetings!=null)
-        {
-            <select>
-                @foreach (MeetingEntity meeting in meetings)
-                {
-                    <option class="card">
-                        <p style="border: 1px solid; padding: 5px">@meeting.Title</p>
-                    </option>
-                }
-            </select>
-        }
-
-        <button class="acceptbtn" @onclick="CreateEntryClicked">Create Entry</button>
+        <p>@SelectedMeetingCreate.Title</p><br/>
+        <label >Description:</label>
+        <textarea @bind="content"></textarea>
+        <button class="acceptbtn" @onclick="UpdateLogbook">Create Entry</button>
     </div>
+
 </Popup>
 
 @code {
+
     [Parameter]
     public int Id { get; set; }
+
     [Parameter]
     public ProjectEntity ProjectLoaded { get; set; }
 
     [Parameter]
+    public MeetingEntity SelectedMeetingCreate { get; set; }
+
+    [Parameter]
     public LogBookEntryCreateDTO CreateEntryDTO { get; set; }
 
-    private LogBookUpdateDTO LogBookUpdateDto { get; set; }
+    private int id;
+    private string title;
+    private string content;
+    private LogBookUpdateDTO updateLogbookDTO { get; set; }
+    private LogBookEntity LogBookEntity { get; set; }
+    private MeetingEntity MeetingEntity { get; set; }
     public Popup CreateEntry { get; set; }
     private MeetingCreateDTO createMeetingDTO = new MeetingCreateDTO();
     private ICollection<MeetingEntity> meetings { get; set; }
     private string msg = "";
     private ProjectEntity projectLoaded { get; set; }
+
     [Parameter]
     public EventCallback UpdateView { get; set; }
 
@@ -49,7 +50,6 @@
     {
         try
         {
-    // CreateEntry.Close();
     // await LogBookService.UpdateAsync(new LogBookUpdateDTO()
     // {
     //     new LogBookEntryEntity()
@@ -62,18 +62,23 @@
             msg = e.Message;
         }
     }
+
     protected override async Task OnInitializedAsync()
     {
         msg = "";
         try
         {
             meetings = await meetingService.GetByProjectIdAsync(Id);
-
+            LogBookEntity = await LogbookService.GetByProjectIdAsync(Id);
             createMeetingDTO.AssignedLeader = projectLoaded.Team.TeamLeader.Id;
             createMeetingDTO.StartDate = DateTime.Now;
             createMeetingDTO.EndDate = DateTime.Now.AddHours(1);
             createMeetingDTO.ProjectAssigned = Id;
-            
+            updateLogbookDTO = new LogBookUpdateDTO(LogBookEntity.Id)
+            {
+                entries = new List<LogBookEntryEntity>()
+            };
+            updateLogbookDTO.entries.AddRange(LogBookEntity.Entries);
         }
         catch (Exception e)
         {
@@ -81,4 +86,47 @@
             msg = e.Message;
         }
     }
+
+    private async Task UpdateLogbook()
+    {
+        try
+        {
+            Console.WriteLine(content);
+            Console.WriteLine(SelectedMeetingCreate);
+            LogBookEntryEntity entry = new LogBookEntryEntity(8, LogBookEntity.Id, SelectedMeetingCreate, content);
+            Console.WriteLine("content");
+            updateLogbookDTO.entries.Add(entry);
+            LogbookService.UpdateAsync(updateLogbookDTO);
+    // foreach (MeetingEntity meeting in meetings)
+    // {
+    //     if (meeting.Id.Equals(id))
+    //     {
+    //         Console.WriteLine(id);
+    //         Console.WriteLine(meeting.Description);
+    //         LogBookEntryEntity entry = new LogBookEntryEntity(5, LogBookEntity.Id, meeting, "The team reviewed documentation");
+    //         updateLogbookDTO.entries.Add(entry);
+    //         LogbookService.UpdateAsync(updateLogbookDTO);
+    //         // CreateEntry.Close();
+    //         // await UpdateView.InvokeAsync();
+    //     }
+    // }
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+    }
+
+    private async Task GetInfo()
+    {
+        foreach (MeetingEntity meeting in meetings)
+        {
+            if (meeting.Id.Equals(id))
+            {
+                title = meeting.Title;
+            }
+        }
+    }
+
 }
