@@ -20,10 +20,8 @@
 @code {
     [Parameter]
     public ProjectEntity ProjectLoaded { get; set; }
-
     [Parameter]
     public MeetingEntity SelectedMeetingCreate { get; set; }
-
     [Parameter]
     public LogBookEntryCreateDTO CreateEntryDTO { get; set; }
     [Parameter]
@@ -56,19 +54,6 @@
             Console.WriteLine("content");
             updateLogbookDTO.entries.Add(entry);
             LogbookService.UpdateAsync(updateLogbookDTO);
-    // foreach (MeetingEntity meeting in meetings)
-    // {
-    //     if (meeting.Id.Equals(id))
-    //     {
-    //         Console.WriteLine(id);
-    //         Console.WriteLine(meeting.Description);
-    //         LogBookEntryEntity entry = new LogBookEntryEntity(5, LogBookEntity.Id, meeting, "The team reviewed documentation");
-    //         updateLogbookDTO.entries.Add(entry);
-    //         LogbookService.UpdateAsync(updateLogbookDTO);
-    //         // CreateEntry.Close();
-    //         // await UpdateView.InvokeAsync();
-    //     }
-    // }
         }
         catch (Exception e)
         {

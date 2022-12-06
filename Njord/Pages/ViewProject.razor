@@ -135,31 +135,33 @@
                 <TabPage Text="Logbook">
                     @if (LogBookEntity != null)
                     {
-                        <p>meetings:</p>
+                        <p>Add meeting to logbook:</p>
                         <select class="form-control"  @bind="MeetingId" >
                             @foreach (MeetingEntity meeting in meetings)
                             {
-                                <option class="card" value="@meeting.Id">
-                                    <p style="border: 1px solid; padding: 5px">@meeting.Title</p>
-                                </option>
+                                if (getAllEntries().Contains(meeting.Id) == false)
+                                {
+                                    <option class="card" value="@meeting.Id">
+                                        <p style="border: 1px solid; padding: 5px">@meeting.Title</p>
+                                    </option>
+                                }
                             }
                         </select>
-                        <p>entries:</p>
-                        
-                        // <button class="acceptbtn" @onclick="@(() => UpdateLogbook())">Create entry</button>
+                        <button class="acceptbtn"@onclick="@(() => OnMeetingCreateSelect())">Create entry</button>
+                        <p>Logbook entries:</p>
                         @if (LogBookEntity.Entries !=null)
                         {
                             <select class="form-control" @bind="@id" >
                                 @foreach (LogBookEntryEntity logBookEntry in LogBookEntity.Entries)
                                 {
                                     <option class="card" value="@logBookEntry.Id">
-                                        <p style="border: 1px solid; padding: 5px" >@logBookEntry.IdMeeting.Title id meeting:@logBookEntry.IdMeeting.Id id entry: @logBookEntry.Id id logbook:@logBookEntry.IdLogBook </p>
+                                        <p style="border: 1px solid; padding: 5px" >@logBookEntry.IdMeeting.Title start date: @logBookEntry.IdMeeting.StartDate </p>
                                     </option>
                                 }
                             </select>
                             <p style="border: 1px solid; padding: 5px">@content</p>
                             <button class="acceptbtn" @onclick="@(() => ShowEntry())">Show entry</button>
-                            <button class="acceptbtn"@onclick="@(() => OnMeetingCreateSelect())">Create entry</button>
+                            
                         }
                     }
                 </TabPage>
@@ -304,12 +306,10 @@
             {
                 if (meeting.Id.Equals(MeetingId))
                 {
-                    if (kk().Contains(meeting.Id)==false)
-                    {
-                        selectedmeetingCreate = meeting;
+                    selectedmeetingCreate = meeting;
                         logbookPopup.CreateEntry.Show();
-                    }
-
+                    
+                    
                 }
             }
         }
@@ -320,11 +320,11 @@
         }
     }
 
-    private List<int> kk()
+    private List<int> getAllEntries()
     {
-        foreach (LogBookEntryEntity VARIABLE in LogBookEntity.Entries)
+        foreach (LogBookEntryEntity logBookEntry in LogBookEntity.Entries)
         {
-            entries.Add(VARIABLE.IdMeeting.Id);
+            entries.Add(logBookEntry.IdMeeting.Id);
         }
         return entries;
     }
