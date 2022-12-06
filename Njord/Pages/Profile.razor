@@ -125,11 +125,8 @@ else  {
             if(member.Availability == null) {
                 availabilityEntities = new List<AvailabilityEntity>();
             } else {
-                Console.WriteLine(member.Availability.First().endHour);
                 availabilityEntities = member.Availability;
             }
-
-            Console.WriteLine(System.Globalization.CultureInfo.CurrentCulture);
 
             memberTeams = await teamService.GetByUserIdAsync(Id);
         }
