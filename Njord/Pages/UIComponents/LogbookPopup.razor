@@ -18,10 +18,6 @@
 </Popup>
 
 @code {
-
-    [Parameter]
-    public int Id { get; set; }
-
     [Parameter]
     public ProjectEntity ProjectLoaded { get; set; }
 
@@ -30,62 +26,25 @@
 
     [Parameter]
     public LogBookEntryCreateDTO CreateEntryDTO { get; set; }
-
+    [Parameter]
+    public LogBookUpdateDTO updateLogbookDTO { get; set; }
+    [Parameter]
+    public LogBookEntity LogBookEntity { get; set; }
+    [Parameter]
+    public EventCallback UpdateView { get; set; }
+    
     private int id;
     private string title;
     private string content;
-    private LogBookUpdateDTO updateLogbookDTO { get; set; }
-    private LogBookEntity LogBookEntity { get; set; }
+
     private MeetingEntity MeetingEntity { get; set; }
     public Popup CreateEntry { get; set; }
-    private MeetingCreateDTO createMeetingDTO = new MeetingCreateDTO();
-    private ICollection<MeetingEntity> meetings { get; set; }
     private string msg = "";
     private ProjectEntity projectLoaded { get; set; }
 
-    [Parameter]
-    public EventCallback UpdateView { get; set; }
 
-    private async Task CreateEntryClicked()
-    {
-        try
-        {
-    // await LogBookService.UpdateAsync(new LogBookUpdateDTO()
-    // {
-    //     new LogBookEntryEntity()
-    // })
-    // await UpdateView.InvokeAsync();
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-            msg = e.Message;
-        }
-    }
+    
 
-    protected override async Task OnInitializedAsync()
-    {
-        msg = "";
-        try
-        {
-            meetings = await meetingService.GetByProjectIdAsync(Id);
-            LogBookEntity = await LogbookService.GetByProjectIdAsync(Id);
-            createMeetingDTO.AssignedLeader = projectLoaded.Team.TeamLeader.Id;
-            createMeetingDTO.StartDate = DateTime.Now;
-            createMeetingDTO.EndDate = DateTime.Now.AddHours(1);
-            createMeetingDTO.ProjectAssigned = Id;
-            updateLogbookDTO = new LogBookUpdateDTO(LogBookEntity.Id)
-            {
-                entries = new List<LogBookEntryEntity>()
-            };
-            updateLogbookDTO.entries.AddRange(LogBookEntity.Entries);
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-            msg = e.Message;
-        }
-    }
 
     private async Task UpdateLogbook()
     {
@@ -93,7 +52,7 @@
         {
             Console.WriteLine(content);
             Console.WriteLine(SelectedMeetingCreate);
-            LogBookEntryEntity entry = new LogBookEntryEntity(8, LogBookEntity.Id, SelectedMeetingCreate, content);
+            LogBookEntryEntity entry = new LogBookEntryEntity(SelectedMeetingCreate.Id, LogBookEntity.Id, SelectedMeetingCreate, content);
             Console.WriteLine("content");
             updateLogbookDTO.entries.Add(entry);
             LogbookService.UpdateAsync(updateLogbookDTO);
@@ -117,16 +76,6 @@
             throw;
         }
     }
-
-    private async Task GetInfo()
-    {
-        foreach (MeetingEntity meeting in meetings)
-        {
-            if (meeting.Id.Equals(id))
-            {
-                title = meeting.Title;
-            }
-        }
-    }
+    
 
 }
