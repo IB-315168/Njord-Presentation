@@ -31,7 +31,7 @@
             {
                 <div class="editProfile">
                     <button class="acceptbtn" @onclick="@(() => navMgr.NavigateTo($"/editProject/{Id}"))">Edit project</button>
-                    <button class="deletebtn" @onclick="@(() => navMgr.NavigateTo("/"))">Delete project</button>
+                    <button class="deletebtn" @onclick="DeleteProject">Delete project</button>
                 </div>
             }
             <h3>@projectLoaded.Name</h3>
@@ -250,6 +250,16 @@
         }
         catch (Exception e)
         {
+            Console.WriteLine(e);
+            msg = e.Message;
+        }
+    }
+
+    private async Task DeleteProject() {
+        try {
+            await projectService.DeleteAsync(Id);
+            navMgr.NavigateTo("/");
+        } catch (Exception e) {
             Console.WriteLine(e);
             msg = e.Message;
         }
