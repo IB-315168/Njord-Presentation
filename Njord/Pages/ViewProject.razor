@@ -197,7 +197,7 @@
 </style>
 
 @code {
-    
+
     [Parameter]
     public int Id { get; set; }
 
@@ -210,7 +210,7 @@
     private MeetingEntity selectedMeeting { get; set; }
     private MeetingEntity selectedmeetingCreate { get; set; }
     private LogBookEntryCreateDTO createEntryDTO { get; set; }
-    
+
     private TaskCreateDTO createTaskDTO = new TaskCreateDTO();
     private TaskEntity selectedTask { get; set; }
     private LogBookUpdateDTO updateLogbookDTO{ get; set; }
@@ -222,7 +222,7 @@
     private ICollection<TaskEntity> tasks { get; set; }
     private ProjectEntity projectLoaded { get; set; }
     private LogBookEntity LogBookEntity { get; set; }
-    
+
     private List<AvailabilityEntity> teamAvailability = new List<AvailabilityEntity>();
 
     protected override async Task OnInitializedAsync()
@@ -270,8 +270,8 @@
         meetingPopup.DetailsPopup.Show();
     }
 
-    
-    
+
+
     private async Task UpdateCalendar()
     {
         try
@@ -359,80 +359,16 @@
             throw;
         }
     }
-    
+
     private void GetTeamAvailability()
     {
         List<AvailabilityEntity> totalAvailability = new List<AvailabilityEntity>();
 
-        foreach (MemberEntity member in projectLoaded.Team.members)
-        {
+        foreach(MemberEntity member in projectLoaded.Team.members) {
             totalAvailability.AddRange(member.Availability);
         }
 
-        totalAvailability.AddRange(projectLoaded.Team.TeamLeader.Availability);
-
-        int currentDayOfWeek = (int)(DateTime.Now.DayOfWeek + 6) % 7;
-        DateTime currentDateTime = DateTime.Now.AddDays(-currentDayOfWeek);
-
-        for (int i = 0; i < 7; i++)
-        {
-            AvailabilityEntity initial = new AvailabilityEntity()
-            {
-                Id = 1,
-                memberName = projectLoaded.Team.Name,
-                DayOfWeek = i,
-                startHour = new DateTime(currentDateTime.Year, currentDateTime.Month, currentDateTime.Day, 8, 0, 0),
-                endHour = new DateTime(currentDateTime.Year, currentDateTime.Month, currentDateTime.Day, 23, 0, 0)
-            };
-
-            if (totalAvailability.Where(aval => aval.DayOfWeek == i).Count() != 0)
-            {
-                foreach (AvailabilityEntity entity in totalAvailability.Where(aval => aval.DayOfWeek == i))
-                {
-                    initial = unionAvailability(initial, entity);
-                }
-
-                if (initial.startHour < initial.endHour)
-                {
-                    teamAvailability.Add(initial);
-                }
-            }
-
-            currentDateTime = currentDateTime.AddDays(1);
-            Console.WriteLine(currentDateTime);
-        }
-    }
-
-    private AvailabilityEntity unionAvailability(AvailabilityEntity entity1, AvailabilityEntity entity2)
-    {
-        DateTime StartHour, EndHour;
-
-        if (entity1.startHour < entity2.startHour)
-        {
-            StartHour = entity2.startHour;
-        }
-        else
-        {
-            StartHour = entity1.startHour;
-        }
-
-        if (entity1.endHour < entity2.endHour)
-        {
-            EndHour = entity1.endHour;
-        }
-        else
-        {
-            EndHour = entity2.endHour;
-        }
-
-        return new AvailabilityEntity()
-        {
-            Id = 1,
-            memberName = projectLoaded.Team.Name,
-            DayOfWeek = entity1.DayOfWeek,
-            startHour = StartHour,
-            endHour = EndHour
-        };
+        teamAvailability = totalAvailability;
     }
 
 }
