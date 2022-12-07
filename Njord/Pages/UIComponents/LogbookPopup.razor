@@ -39,11 +39,7 @@
     public Popup CreateEntry { get; set; }
     private string msg = "";
     private ProjectEntity projectLoaded { get; set; }
-
-
     
-
-
     private async Task UpdateLogbook()
     {
         try
@@ -54,6 +50,8 @@
             Console.WriteLine("content");
             updateLogbookDTO.entries.Add(entry);
             LogbookService.UpdateAsync(updateLogbookDTO);
+            CreateEntry.Close();
+            await UpdateView.InvokeAsync();
         }
         catch (Exception e)
         {
