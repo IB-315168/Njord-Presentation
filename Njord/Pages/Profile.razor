@@ -146,8 +146,8 @@ else  {
         msg = "";
         try
         {
-            await memberService.DeleteAsync(member.Id);
             await authService.LogoutAsync();
+            await memberService.DeleteAsync(member.Id);
             navMgr.NavigateTo("/");
         }
         catch (Exception e)
