@@ -136,7 +136,8 @@
                     @if (LogBookEntity != null)
                     {
                         <p>Add meeting to logbook:</p>
-                        <select class="form-control"  @bind="MeetingId" >
+                        <select disabled=@TaskRunning class="form-control"  @bind="MeetingId" >
+                            <option disabled selected value>-- Select meeting --</option>
                             @foreach (MeetingEntity meeting in meetings)
                             {
                                 if (getAllEntries().Contains(meeting.Id) == false)
@@ -147,11 +148,12 @@
                                 }
                             }
                         </select>
-                        <button class="acceptbtn"@onclick="@(() => OnMeetingCreateSelect())">Create entry</button>
+                        <button disabled=@TaskRunning class="acceptbtn" @onclick="@(() => OnMeetingCreateSelect())">Create entry</button>
                         <p>Logbook entries:</p>
                         @if (LogBookEntity.Entries !=null)
                         {
-                            <select class="form-control" @bind="@id" >
+                            <select disabled=@TaskRunning class="form-control" @bind="@id" >
+                                <option disabled selected value>-- Select entry --</option>
                                 @foreach (LogBookEntryEntity logBookEntry in LogBookEntity.Entries)
                                 {
                                     <option class="card" value="@logBookEntry.Id">
@@ -160,7 +162,7 @@
                                 }
                             </select>
                             <p style="border: 1px solid; padding: 5px">@content</p>
-                            <button class="acceptbtn" @onclick="@(() => ShowEntry())">Show entry</button>
+                            <button disabled=@TaskRunning class="acceptbtn" @onclick="@(() => ShowEntry())">Show entry</button>
                             
                         }
                     }
@@ -206,6 +208,7 @@
     private int id;
     private string content;
     private List<int> entries = new List<int>();
+
     private MeetingCreateDTO createMeetingDTO = new MeetingCreateDTO();
     private MeetingEntity selectedMeeting { get; set; }
     private MeetingEntity selectedmeetingCreate { get; set; }
@@ -213,11 +216,15 @@
 
     private TaskCreateDTO createTaskDTO = new TaskCreateDTO();
     private TaskEntity selectedTask { get; set; }
+
     private LogBookUpdateDTO updateLogbookDTO{ get; set; }
+
     private TaskPopup taskPopup;
     private MeetingPopup meetingPopup;
     private LogbookPopup logbookPopup;
+    private bool TaskRunning = false;
     private RadzenScheduler<AvailabilityEntity> avalCalendar;
+
     private ICollection<MeetingEntity> meetings { get; set; }
     private ICollection<TaskEntity> tasks { get; set; }
     private ProjectEntity projectLoaded { get; set; }
@@ -234,10 +241,12 @@
             projectLoaded = await projectService.GetByIdAsync(Id);
             meetings = await meetingService.GetByProjectIdAsync(Id);
             tasks = await taskService.GetByProjectIdAsync(Id);
+
             updateLogbookDTO = new LogBookUpdateDTO(LogBookEntity.Id)
             {
                 entries = new List<LogBookEntryEntity>()
             };
+
             updateLogbookDTO.entries.AddRange(LogBookEntity.Entries);
             GetTeamAvailability();
 
@@ -280,13 +289,12 @@
         meetingPopup.DetailsPopup.Show();
     }
 
-
-
     private async Task UpdateCalendar()
     {
         try
         {
             meetings = await meetingService.GetByProjectIdAsync(Id);
+            await UpdateLogbook();
         }
         catch (Exception e)
         {
@@ -299,8 +307,10 @@
     {
         try
         {
+            TaskRunning = true;
             LogBookEntity = await LogbookService.GetByProjectIdAsync(Id);
             meetings = await meetingService.GetByProjectIdAsync(Id);
+            TaskRunning = false;
         }
         catch (Exception e)
         {
