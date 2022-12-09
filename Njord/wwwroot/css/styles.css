@@ -58,6 +58,10 @@
     transition: 0.3s;
 }
 
+.acceptbtn:disabled {
+    background-color: dimgray;
+}
+
 .deletebtn {
     background-color: #194A7E;
     transition: 0.3s;
@@ -189,13 +193,13 @@
     width: 15%;
     box-sizing: border-box;
     display: inline;
+    overflow: hidden;
 }
 
     .user-projects .team-card {
         box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
         margin: 5px;
         border-radius: 5px;
-        float: left;
         padding: 10px;
         transition: 0.3s;
     }

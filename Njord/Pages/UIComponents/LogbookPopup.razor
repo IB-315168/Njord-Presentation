@@ -11,8 +11,8 @@
         <label>Title:</label>
         <p>@SelectedMeetingCreate.Title</p><br/>
         <label >Description:</label>
-        <textarea @bind="content"></textarea>
-        <button class="acceptbtn" @onclick="UpdateLogbook">Create Entry</button>
+        <textarea disabled=@TaskRunning @bind="content"></textarea>
+        <button disabled=@TaskRunning class="acceptbtn" @onclick="UpdateLogbook">Create Entry</button>
     </div>
 
 </Popup>
@@ -30,27 +30,28 @@
     public LogBookEntity LogBookEntity { get; set; }
     [Parameter]
     public EventCallback UpdateView { get; set; }
-    
+
     private int id;
     private string title;
     private string content;
 
     private MeetingEntity MeetingEntity { get; set; }
     public Popup CreateEntry { get; set; }
+    private bool TaskRunning = false;
+
     private string msg = "";
-    private ProjectEntity projectLoaded { get; set; }
-    
+
     private async Task UpdateLogbook()
     {
         try
         {
-            Console.WriteLine(content);
-            Console.WriteLine(SelectedMeetingCreate);
+            TaskRunning = true;
             LogBookEntryEntity entry = new LogBookEntryEntity(SelectedMeetingCreate.Id, LogBookEntity.Id, SelectedMeetingCreate, content);
-            Console.WriteLine("content");
+
             updateLogbookDTO.entries.Add(entry);
-            LogbookService.UpdateAsync(updateLogbookDTO);
+            await LogbookService.UpdateAsync(updateLogbookDTO);
             CreateEntry.Close();
+            TaskRunning = false;
             await UpdateView.InvokeAsync();
         }
         catch (Exception e)
