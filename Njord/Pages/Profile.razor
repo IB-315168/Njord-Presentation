@@ -15,72 +15,77 @@
 @inject IAuthService authService
 @inject NavigationManager navMgr
 
-@if (member == null)
-{
-    <label>Loading member profile..</label>
-}
-else  {
-    <AuthorizeView>
-        <NotAuthorized><label>You must be logged in to perform that action</label></NotAuthorized>
-        <Authorized>
-            <h3>Profile - @member.FullName</h3>
-            @if (@context.User.Claims.First(c => c.Type.Equals("Id")).Value.Equals(member.Id.ToString()))
-            {
-                <div class="editProfile">
-                    <button class="acceptbtn" @onclick="@(() => navMgr.NavigateTo($"/EditProfile/{@context.User.Claims.First(c => c.Type.Equals("Id")).Value}"))">Edit profile</button>
-                    <button class="deletebtn" @onclick="DeleteProfile">Delete profile</button>
-                </div>
-            }
-            <div class="details">
-                <table>
-                    <tr>
-                        <td><b>Full name:</b></td>
-                        <td>@member.FullName</td>
-                    </tr>
-                    <tr>
-                        <td><b>User name:</b></td>
-                        <td>@member.UserName</td>
-                    </tr>
-                    <tr>
-                        <td><b>Email:</b></td>
-                        <td><a href="mailto:@member.Email">@member.Email</a></td>
-                    </tr>
-                </table>
-            </div>
-            <div class="user-teams">
-                <h3>Teams</h3>
-                @if (memberTeams.Count() == 0)
-                {
-                    <label>This user does not belong to any teams.</label>
-                }
-                else
-                {
-                    @foreach (TeamBasicDTO team in memberTeams)
-                    {
-                        <div class="team-card" @onclick="@(() => navMgr.NavigateTo($"/team/{team.Id}"))">
-                            <div id="teamName">@team.Name</div>
-                            <label id="teamLeaderName">@team.TeamLeaderName</label>
-                        </div>
-                    }
-                }
-            </div>
-            <div class="availability">
-                <hr/>
-                <h3>Availability</h3>
-                <RadzenScheduler Data="@availabilityEntities" TItem="AvailabilityEntity" StartProperty="startHour" EndProperty="endHour" TextProperty="memberName">
-                    <RadzenWeekView />
-                </RadzenScheduler>
-            </div>
 
-            <Popup ShowPopup="showPopup">
-                <h3>Warning</h3>
-                <label>You are about to delete your profile. Confirm that action by typing <b>@context.User.Identity.Name</b> in field below.</label>
-                <input type="text" @bind="removeConfirmation" @bind:event="oninput"/>
-                <button disabled="@(string.IsNullOrEmpty(removeConfirmation) || !removeConfirmation.Equals(context.User.Identity.Name))" @onclick="Proceed">Confirm</button>
-            </Popup>
-        </Authorized>
-    </AuthorizeView>   
-}
+<AuthorizeView>
+    <NotAuthorized>
+        <label>You must be logged in to perform that action</label>
+    </NotAuthorized>
+    <Authorized>
+    @if (member == null)
+    {
+        <label>Loading member profile..</label>
+    }
+    else
+    {
+        <h3>Profile - @member.FullName</h3>
+        @if (@context.User.Claims.First(c => c.Type.Equals("Id")).Value.Equals(member.Id.ToString()))
+        {
+            <div class="editProfile">
+                <button class="acceptbtn" @onclick="@(() => navMgr.NavigateTo($"/EditProfile/{@context.User.Claims.First(c => c.Type.Equals("Id")).Value}"))">Edit profile</button>
+                <button class="deletebtn" @onclick="DeleteProfile">Delete profile</button>
+            </div>
+        }
+        <div class="details">
+            <table>
+                <tr>
+                    <td><b>Full name:</b></td>
+                    <td>@member.FullName</td>
+                </tr>
+                <tr>
+                    <td><b>User name:</b></td>
+                    <td>@member.UserName</td>
+                </tr>
+                <tr>
+                    <td><b>Email:</b></td>
+                    <td><a href="mailto:@member.Email">@member.Email</a></td>
+                </tr>
+            </table>
+        </div>
+        <div class="user-teams">
+            <h3>Teams</h3>
+            @if (memberTeams.Count() == 0)
+            {
+                <label>This user does not belong to any teams.</label>
+            }
+            else
+            {
+                @foreach (TeamBasicDTO team in memberTeams)
+                {
+                    <div class="team-card" @onclick="@(() => navMgr.NavigateTo($"/team/{team.Id}"))">
+                        <div id="teamName">@team.Name</div>
+                        <label id="teamLeaderName">@team.TeamLeaderName</label>
+                    </div>
+                }
+            }
+        </div>
+        <div class="availability">
+            <hr/>
+            <h3>Availability</h3>
+            <RadzenScheduler Data="@availabilityEntities" TItem="AvailabilityEntity" StartProperty="startHour"
+                EndProperty="endHour" TextProperty="memberName">
+                <RadzenWeekView />
+            </RadzenScheduler>
+        </div>
+
+        <Popup ShowPopup="showPopup">
+            <h3>Warning</h3>
+            <label>You are about to delete your profile. Confirm that action by typing <b>@context.User.Identity.Name</b> in field below.</label>
+            <input type="text" @bind="removeConfirmation" @bind:event="oninput"/>
+            <button disabled="@(string.IsNullOrEmpty(removeConfirmation) || !removeConfirmation.Equals(context.User.Identity.Name))" @onclick="Proceed">Confirm</button>
+        </Popup>
+    }
+    </Authorized>
+</AuthorizeView>   
 
 <style>
     .rz-button rz-next{
