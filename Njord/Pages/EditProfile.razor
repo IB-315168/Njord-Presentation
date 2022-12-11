@@ -58,13 +58,10 @@
         <h3>Add availability</h3><br>
         <label>Day of week:</label>
         <select @bind=DayOfWeek>
-            <option value="0">Monday</option>
-            <option value="1">Tuesday</option>
-            <option value="2">Wednesday</option>
-            <option value="3">Thursday</option>
-            <option value="4">Friday</option>
-            <option value="5">Saturday</option>
-            <option value="6">Sunday</option>
+            @foreach (Tuple<int, string> pair in daysAvailable)
+            {
+                <option value=@pair.Item1>@pair.Item2</option>
+            }
         </select>
         <label>From:</label>
         <p>
@@ -83,13 +80,9 @@
         <h3>Edit availability</h3><br>
         <label>Day of week:</label>
         <select @bind=DayOfWeek>
-            <option value="0">Monday</option>
-            <option value="1">Tuesday</option>
-            <option value="2">Wednesday</option>
-            <option value="3">Thursday</option>
-            <option value="4">Friday</option>
-            <option value="5">Saturday</option>
-            <option value="6">Sunday</option>
+            @foreach(Tuple<int, string> pair in daysAvailable) {
+                <option value=@pair.Item1>@pair.Item2</option>
+            }
         </select>
         <label>From:</label>
         <p>
@@ -140,6 +133,8 @@
     private Popup editPopup;
     private RadzenScheduler<AvailabilityEntity> scheduler;
 
+    private List<Tuple<int, string>> daysAvailable { get; set; }
+
     private int DayOfWeek;
     private DateTime From;
     private DateTime To;
@@ -161,6 +156,10 @@
                 Password = "",
                 Availability = userData.Availability
             };
+
+        daysAvailable = new List<Tuple<int, string>>();
+
+        PopulateDays();
     }   
 
     private async Task UpdateAsync()
@@ -223,6 +222,10 @@
 
         scheduler.Reload();
 
+        daysAvailable = new List<Tuple<int, string>>();
+
+        PopulateDays();
+
         createPopup.Close();
     }
 
@@ -232,6 +235,10 @@
         dto.Availability.Remove(selectedAvailability);
 
         availabilityEntities = dto.Availability;
+
+        daysAvailable = new List<Tuple<int, string>>();
+
+        PopulateDays();
 
         scheduler.Reload();
     }
@@ -263,10 +270,44 @@
 
         editPopup.Close();
 
+        daysAvailable = new List<Tuple<int, string>>();
+
+        PopulateDays();
+
         scheduler.Reload();
     }
 
-    private void PreValidate() {
-        //Validation
+    private void PopulateDays() {
+        for (int i = 0; i < 7; i++)
+        {
+            if (dto.Availability.Where(a => a.DayOfWeek == i).Count() < 5)
+            {
+                string day = "";
+                switch(i) {
+                    case 0: 
+                        day = "Monday";
+                        break;
+                    case 1:
+                        day = "Tuesday";
+                        break;
+                    case 2:
+                        day = "Wednesday";
+                        break;
+                    case 3:
+                        day = "Thursday";
+                        break;
+                    case 4:
+                        day = "Friday";
+                        break;
+                    case 5:
+                        day = "Saturday";
+                        break;
+                    case 6:
+                        day = "Sunday";
+                        break;
+                }
+                daysAvailable.Add(new Tuple<int, string>(i, day));
+            }
+        }
     }
 }
