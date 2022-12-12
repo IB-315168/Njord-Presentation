@@ -34,7 +34,7 @@
                     <button class="deletebtn" @onclick="DeleteProject">Delete project</button>
                 </div>
             }
-            <h3>@projectLoaded.Name</h3><label>@projectLoaded.Team.Name</label>
+            <h3>@projectLoaded.Name</h3><p style="font-size: 12px;"><label>@projectLoaded.Team.Name</label><label style="margin-left: 5px;">Started on: @projectLoaded.StartDate.ToLongDateString()</label></p>
             <hr/>
             <TabControl>
                 <TabPage Text="Calendar">
