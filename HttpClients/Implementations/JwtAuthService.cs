@@ -89,7 +89,6 @@ namespace HttpClients.Implementations
             return Task.CompletedTask;
         }
 
-        // TODO: Implement on re-route of register
         public Task RegisterAsync(MemberEntity user)
         {
             throw new NotImplementedException();

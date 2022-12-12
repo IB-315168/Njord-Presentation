@@ -102,13 +102,6 @@
 
             dto.Name = projectName;
 
-    //    Console.WriteLine(dto.TeamId);
-            //dto.Name = projectName;
-            //dto.TeamId = teamId;
-            //if(deadline != null) {
-            //    dto.Deadline = (DateTime) deadline;
-            //}
-
             Console.WriteLine(dto.TeamId);
 
             await projectService.CreateAsync(dto);
