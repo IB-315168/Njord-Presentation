@@ -57,7 +57,7 @@
                     }
                     <div class="form-group field">
                         <input style="width:500px" type="text" @bind="@newRequirement"/><button class="acceptbtn" @onclick="AddRequirement" disabled="@(string.IsNullOrEmpty(newRequirement))">Add requirement</button>
-                        </div>
+                    </div>
                 </TabPage>
             </TabControl>
         }
@@ -80,11 +80,11 @@
         projectLoaded = await projectService.GetByIdAsync(Id);
 
         projectUpdateDTO = new ProjectUpdateDTO(projectLoaded.Id)
-            {
-                Name = projectLoaded.Name,
-                deadline = projectLoaded.Deadline,
-                requirements = projectLoaded.Requirements
-            };
+        {
+            Name = projectLoaded.Name,
+            deadline = projectLoaded.Deadline,
+            requirements = projectLoaded.Requirements
+        };
     }
 
     private async Task Save() {

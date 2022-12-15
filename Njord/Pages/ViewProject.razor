@@ -135,20 +135,22 @@
                 <TabPage Text="Logbook">
                     @if (LogBookEntity != null)
                     {
-                        <p>Add meeting to logbook:</p>
-                        <select disabled=@TaskRunning class="form-control"  @bind="MeetingId" >
-                            <option disabled selected value>-- Select meeting --</option>
-                            @foreach (MeetingEntity meeting in meetings)
-                            {
-                                if (getAllEntries().Contains(meeting.Id) == false)
+                        @if(context.User.Claims.First(c => c.Type.Equals("Id")).Value.Equals(projectLoaded.Team.TeamLeader.Id.ToString())) { 
+                            <p>Add meeting to logbook:</p>
+                            <select disabled=@TaskRunning class="form-control"  @bind="MeetingId" >
+                                <option disabled selected value>-- Select meeting --</option>
+                                @foreach (MeetingEntity meeting in meetings)
                                 {
-                                    <option class="card" value="@meeting.Id">
-                                        <p style="border: 1px solid; padding: 5px">@meeting.Title</p>
-                                    </option>
+                                    if (getAllEntries().Contains(meeting.Id) == false)
+                                    {
+                                        <option class="card" value="@meeting.Id">
+                                            <p style="border: 1px solid; padding: 5px">@meeting.Title</p>
+                                        </option>
+                                    }
                                 }
-                            }
-                        </select>
-                        <button disabled=@TaskRunning class="acceptbtn" @onclick="@(() => OnMeetingCreateSelect())">Create entry</button>
+                            </select>
+                            <button disabled=@TaskRunning class="acceptbtn" @onclick="@(() => OnMeetingCreateSelect())">Create entry</button>
+                        }
                         <p>Logbook entries:</p>
                         @if (LogBookEntity.Entries !=null)
                         {
